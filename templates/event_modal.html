@@ -1,0 +1,28 @@
+            <div class="modal-header">
+                <h5 class="modal-title">New event</h5>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <form id="modalForm" onsubmit="return false">
+                    <input hidden id="allDay" name="allDay" readonly type="text" value="{{ all_day }}">
+                    <input hidden id="startDateTime" name="startDateTime" readonly type="text"
+                           value="{{ start_date_time }}">
+                    <input hidden id="endDateTime" name="endDateTime" readonly type="text" value="{{ end_date_time }}">
+                    <div class="form-group">
+
+                        <input class="form-control mt-2" id="eventTitle" name="eventTitle" placeholder="put event name"
+                               type="text">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" id="isRecurrent" name="isRecurrent" type="checkbox">
+                        <label class="form-check-label" for="isRecurrent">Repeat every week next 5 weeks</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" form="modalForm" type="submit"
+                        onclick="submit_modal(modalForm, modal, 'postEvent')">Save changes</button>
+            </div>

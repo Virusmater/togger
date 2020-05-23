@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ event_title }}</h5>
+    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body" id="modal-body">
+    <form id="modalForm" onsubmit="return false">
+        <input id="eventId" name="eventId" type="hidden" value="{{ event_id }}">
+        <ul class="list-group">
+            {% for shift in shifts %}
+            <label class="list-group-item mb-0 " for="ShiftCheckBox{{ shift.doc_id }}">
+                {{ shift.worker_name }}
+                <div class="float-right">
+                    <input checked="true" class="form-check-input" id="ShiftCheckBox{{ shift.doc_id }}"
+                           name="ShiftCheckBox{{ shift.doc_id }}" type="checkbox" value="true">
+                    <input checked="false" name="ShiftCheckBox{{ shift.doc_id }}" type="hidden" value="false">
+                </div>
+                </li>
+            </label>
+            {% endfor %}
+            <input class="form-control mt-2" id="newName" name="newNameText" placeholder="Put your or friend's name" type="text">
+
+        </ul>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-danger mr-auto" form="modalForm" type="submit"
+            onclick="submit_modal(modalForm, modal, 'removeEvent')">
+        Delete
+    </button>
+    <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+    <button class="btn btn-primary" form="modalForm" type="submit"
+            onclick="submit_modal(modalForm, modal, 'postShifts')">Save changes</button>
+</div>

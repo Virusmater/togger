@@ -1,0 +1,8 @@
+version: '3'
+services:
+  togger:
+    restart: always
+    env_file: .env
+    build: .
+    ports:
+      - "80:80"
