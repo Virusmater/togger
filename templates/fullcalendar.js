@@ -10,8 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             formData.append('endDateTime', info.event.start.toJSON())
         }
-
-
         formData.append('eventTitle', info.event.title)
         formData.append('eventId', info.event.id)
         formData.append('allDay', info.event.allDay)
@@ -35,6 +33,23 @@ document.addEventListener('DOMContentLoaded', function() {
         nextDayThreshold: "09:00:00",
         slotMaxTime: "29:00:00",
         expandRows: true,
+  customButtons: {
+        toggleEditButton: {
+        // https://stackoverflow.com/questions/61987141/dyanmic-change-text-on-custombuttons
+        text: '',
+              click: function() {
+              if (calendar.getOption('editable')){
+                calendar.setOption('editable',false)
+                calendar.setOption('selectable',false)
+                event.target.innerHTML = "edit"
+              } else {
+                calendar.setOption('editable',true)
+                calendar.setOption('selectable',true)
+                event.target.innerHTML = "stop"
+              }
+              }
+            }}
+         ,
         eventTimeFormat: {
             hour: '2-digit',
             minute: '2-digit',
@@ -68,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
         headerToolbar: {
-            left: isMobile() ? 'prev,next' : 'prev,next today',
+            left: isMobile() ? 'prev,next' : 'prev,next today toggleEditButton',
             center: 'title',
             right: isMobile() ? 'dayGridMonth,timeGridDay,listWeek' : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
@@ -87,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         eventClick: function(info) {
             var request = new XMLHttpRequest();
-            request.open('GET', '/render_shifts?id=' + info.event.id, true);
+            request.open('GET', '/render_shifts?id=' + info.event.id + '&isEditable=' + calendar.getOption("editable"), true);
             request.onload = function() {
                 if (this.status >= 200 && this.status < 400) {
                     document.getElementById("modalContent").innerHTML = this.response
@@ -101,8 +116,8 @@ document.addEventListener('DOMContentLoaded', function() {
         eventDrop: postEvent,
         initialView: isMobile() ? 'timeGridDay' : 'timeGridWeek',
         navLinks: true, // can click day/week names to navigate views
-        editable: true,
-        selectable: true,
+        editable: false,
+        selectable: false,
         nowIndicator: true,
         dayMaxEvents: true, // allow "more" link when too many events
         events: '/get_events',
@@ -110,4 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     calendar.render();
+    // https://stackoverflow.com/questions/61987141/dyanmic-change-text-on-custombuttons
+    document.getElementsByClassName("fc-toggleEditButton-button")[0].innerHTML = "edit"
+
 });

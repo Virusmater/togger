@@ -21,7 +21,7 @@ def get_users():
 def get_user(username):
     if username is None:
         return
-    return next(item for item in get_users() if item['username'] == username)
+    return next((item for item in get_users() if item['username'] == username), None)
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -29,7 +29,8 @@ def login():
     if request.method == 'GET':
         return render_template('signin.html')
     email = request.form['email']
-    if check_password_hash(get_user(email)['password'], request.form['password']):
+    print(get_user(email))
+    if get_user(email) and check_password_hash(get_user(email)['password'], request.form['password']):
         user = User()
         user.id = email
         flask_login.login_user(user)

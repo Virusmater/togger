@@ -19,17 +19,21 @@
                 </li>
             </label>
             {% endfor %}
-            <input class="form-control mt-2" id="newName" name="newNameText" placeholder="Put your or friend's name" type="text">
+            <input class="form-control mt-2" id="newName" name="newNameText" placeholder="Put your or friend's name"
+                   type="text">
 
         </ul>
     </form>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-danger mr-auto" form="modalForm" type="submit"
-            onclick="submit_modal(modalForm, modal, 'removeEvent')">
+    {% if is_editable %}
+    <button class="btn btn-danger mr-auto" form="modalForm" onclick="submit_modal(modalForm, modal, 'removeEvent')"
+            type="submit">
         Delete
     </button>
+    {% endif %}
     <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-    <button class="btn btn-primary" form="modalForm" type="submit"
-            onclick="submit_modal(modalForm, modal, 'postShifts')">Save changes</button>
+    <button class="btn btn-primary" form="modalForm" onclick="submit_modal(modalForm, modal, 'postShifts')"
+            type="submit">Save changes
+    </button>
 </div>

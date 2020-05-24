@@ -1,3 +1,4 @@
+import flask_login
 from tinydb import TinyDB, Query
 from dateutil.rrule import rrule, WEEKLY
 
@@ -5,7 +6,9 @@ db = TinyDB("resources/togger.json")
 
 
 def get_events():
-    events = db.table('events').all()
+    user_id = flask_login.current_user.id
+    Event = Query()
+    events = db.table('events').search(Event.userId == user_id)
     for event in events:
         shift = Query()
         event['id'] = event.doc_id
@@ -19,6 +22,7 @@ def get_events():
 
 def save_event(title, start, end, all_day=False, event_id=None, recurrent=False):
     dates = [(start, end)]
+    user_id = flask_login.current_user.id
     if recurrent:
         start_dates = (list(rrule(freq=WEEKLY, count=5, dtstart=start)))
         end_dates = (list(rrule(freq=WEEKLY, count=5, dtstart=end)))
@@ -28,12 +32,12 @@ def save_event(title, start, end, all_day=False, event_id=None, recurrent=False)
         if event_id:
             events_table.update({"title": title,
                                  "start": str(start), "end": str(end),
-                                 "allDay": all_day},
+                                 "allDay": all_day, "userId": user_id},
                                 doc_ids=[int(event_id)])
         else:
             events_table.insert({"title": title,
                                  "start": str(start), "end": str(end),
-                                 "allDay": all_day})
+                                 "allDay": all_day, "userId": user_id})
 
 
 def remove_event(event_id):

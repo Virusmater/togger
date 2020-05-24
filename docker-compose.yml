@@ -5,4 +5,4 @@ services:
     env_file: .env
     build: .
     ports:
-      - "80:80"
+      - "5001:80"

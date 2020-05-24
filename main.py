@@ -9,6 +9,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 
 import auth
+
 app.register_blueprint(auth.bp)
 
 
@@ -26,8 +27,10 @@ def get_events():
 @app.route('/render_shifts', methods=['GET'])
 def render_shifts():
     event_id = request.args.get('id')
+    is_editable = bool(strtobool(request.args.get('isEditable')))
     event_title = event_api.get_event(event_id)['title']
-    return render_template('shifts_modal.html', event_title=event_title, shifts=event_api.get_shifts(event_id),
+    return render_template('shifts_modal.html', is_editable=is_editable,
+                           event_title=event_title, shifts=event_api.get_shifts(event_id),
                            event_id=event_id)
 
 
