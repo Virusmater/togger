@@ -5,7 +5,7 @@
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <meta content="" name="description">
     <meta content="" name="author">
-
+    <link rel=icon href={{ url_for('static', filename='favicon.png') }} sizes="57x57" type="image/png">
     <title>Togger</title>
 
     <!-- Bootstrap core CSS -->
@@ -19,7 +19,7 @@
 <body class="text-center">
 
 <form class="form-signin" action='login' method='POST'>
-    <!-- <img alt="" class="mb-4" height="72" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" width="72"> -->
+     <img title="yes, this is a screenshot from logomaster" class="mb-4" height="72" src="{{ url_for('static', filename='logo.png') }}" >
     {% with messages = get_flashed_messages() %}
   {% if messages %}
     {% for message in messages %}
