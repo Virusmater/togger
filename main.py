@@ -4,8 +4,10 @@ from dateutil import parser
 import flask_login
 from flask import Flask, request, render_template, jsonify, redirect
 import event_api
+from dotenv import load_dotenv
 
 app = Flask(__name__)
+load_dotenv()
 app.secret_key = os.environ.get("SECRET_KEY")
 
 import auth
