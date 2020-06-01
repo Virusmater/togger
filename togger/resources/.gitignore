@@ -1,4 +1,5 @@
 # Ignore everything in this directory
-*
+auth.json
 # Except this file
 !.gitignore
+/database.db

@@ -1,16 +1,11 @@
-import os
 from distutils.util import strtobool
 from dateutil import parser
 import flask_login
-from flask import Flask, request, render_template, jsonify, redirect
-import event_api
-from dotenv import load_dotenv
-
-application = Flask(__name__)
-load_dotenv()
-application.secret_key = os.environ.get("SECRET_KEY")
-
-import auth
+from flask import request, render_template, jsonify, redirect
+from togger import application
+from togger.event import event_api
+from .auth import auth
+from .event.models import Event
 
 application.register_blueprint(auth.bp)
 
@@ -22,26 +17,29 @@ def main():
 
 @application.route('/get_events', methods=['GET'])
 def get_events():
-    return jsonify(event_api.get_events())
+    start = parser.parse(request.args.get('start'))
+    end = parser.parse(request.args.get('end'))
+    events = [event.serialized for event in event_api.get_events(start, end)]
+    return jsonify(events)
 
 
 @application.route('/render_shifts', methods=['GET'])
 def render_shifts():
     event_id = request.args.get('id')
     is_editable = bool(strtobool(request.args.get('isEditable')))
-    event_title = event_api.get_event(event_id)['title']
+    event = event_api.get_event(event_id)
     return render_template('shifts_modal.html', is_editable=is_editable,
-                           event_title=event_title, shifts=event_api.get_shifts(event_id),
-                           event_id=event_id)
+                           event=event)
 
 
 @application.route('/render_event', methods=['GET'])
 def render_event():
-    start_date_time = request.args.get('startDateTime')
-    end_date_time = request.args.get('endDateTime')
-    all_day = request.args.get('allDay')
-    return render_template('event_modal.html', start_date_time=start_date_time,
-                           end_date_time=end_date_time, all_day=all_day)
+    if request.args.get('id'):
+        event = event_api.get_event(request.args.get('id'))
+    else:
+        event = Event(id="", title="", start=request.args.get('startDateTime'), end=request.args.get('endDateTime'),
+                      all_day=request.args.get('allDay'))
+    return render_template('event_modal.html', event=event)
 
 
 @application.route('/post_event', methods=['POST'])
@@ -53,7 +51,7 @@ def post_event(all_day=False, event_id=None, recurrent=False):
         recurrent = request.form['isRecurrent']
     if 'allDay' in request.form:
         all_day = bool(strtobool(request.form['allDay']))
-    if 'eventId' in request.form:
+    if 'eventId' in request.form and request.form['eventId']:
         event_id = request.form['eventId']
     event_api.save_event(title=title, start=start, end=end, all_day=all_day, event_id=event_id, recurrent=recurrent)
     return redirect("/")

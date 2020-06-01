@@ -102,7 +102,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         eventClick: function(info) {
             var request = new XMLHttpRequest();
-            request.open('GET', '/render_shifts?id=' + info.event.id + '&isEditable=' + calendar.getOption("editable"), true);
+            if (calendar.getOption("editable")){
+                request.open('GET', '/render_event?id=' + info.event.id, true);
+            } else {
+                request.open('GET', '/render_shifts?id=' + info.event.id + '&isEditable=' + calendar.getOption("editable"), true);
+            }
             request.onload = function() {
                 if (this.status >= 200 && this.status < 400) {
                     document.getElementById("modalContent").innerHTML = this.response

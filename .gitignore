@@ -3,5 +3,5 @@
 /.idea/
 /core
 /.directory
-/resources/auth.json
-/resources/togger.json
+/togger/resources/auth.json
+/togger/resources/togger.json

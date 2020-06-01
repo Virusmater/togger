@@ -1,20 +1,20 @@
 <div class="modal-header">
-    <h5 class="modal-title">{{ event_title }}</h5>
+    <h5 class="modal-title">{{ event.title }}</h5>
     <button aria-label="Close" class="close" data-dismiss="modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 <div class="modal-body" id="modal-body">
     <form id="modalForm" onsubmit="return false">
-        <input id="eventId" name="eventId" type="hidden" value="{{ event_id }}">
+        <input id="eventId" name="eventId" type="hidden" value="{{ event.id }}">
         <ul class="list-group">
-            {% for shift in shifts %}
-            <label class="list-group-item mb-0 " for="ShiftCheckBox{{ shift.doc_id }}">
-                {{ shift.worker_name }}
+            {% for shift in event.shifts %}
+            <label class="list-group-item mb-0 " for="ShiftCheckBox{{ shift.id }}">
+                {{ shift.person }}
                 <div class="float-right">
-                    <input checked="true" class="form-check-input" id="ShiftCheckBox{{ shift.doc_id }}"
-                           name="ShiftCheckBox{{ shift.doc_id }}" type="checkbox" value="true">
-                    <input checked="false" name="ShiftCheckBox{{ shift.doc_id }}" type="hidden" value="false">
+                    <input checked="true" class="form-check-input" id="ShiftCheckBox{{ shift.id }}"
+                           name="ShiftCheckBox{{ shift.id }}" type="checkbox" value="true">
+                    <input checked="false" name="ShiftCheckBox{{ shift.id }}" type="hidden" value="false">
                 </div>
                 </li>
             </label>
@@ -26,12 +26,6 @@
     </form>
 </div>
 <div class="modal-footer">
-    {% if is_editable %}
-    <button class="btn btn-danger mr-auto" form="modalForm" onclick="submit_modal(modalForm, modal, 'removeEvent')"
-            type="submit">
-        Delete
-    </button>
-    {% endif %}
     <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
     <button class="btn btn-primary" form="modalForm" onclick="submit_modal(modalForm, modal, 'postShifts')"
             type="submit">Save changes
