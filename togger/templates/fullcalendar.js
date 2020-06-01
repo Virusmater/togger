@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     };
     calendar = new FullCalendar.Calendar(calendarEl, {
-        height: '100%',
+        stickyHeaderDates: true,
+        height: 'auto',
         scrollTime: "16:00:00",
         firstDay: 1,
         slotMinTime: "09:00:00",
