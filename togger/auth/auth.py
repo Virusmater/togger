@@ -1,6 +1,6 @@
 import flask_login
 from flask import Blueprint, request, redirect, url_for, render_template, flash
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from togger import db
 from .models import User
@@ -64,6 +64,13 @@ def register():
         return redirect(url_for('main'))
     flash('Such user already exists')
     return redirect(url_for('auth.register'))
+
+
+@bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('auth.login'))
 
 
 @login_manager.user_loader

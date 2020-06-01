@@ -11,6 +11,7 @@ def get_events(start, end):
 
 
 def save_event(title, start, end, all_day=False, event_id=None, recurrent=False):
+    print(event_id)
     dates = [(start, end)]
     user_id = flask_login.current_user.id
     if recurrent:

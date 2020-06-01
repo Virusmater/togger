@@ -41,7 +41,7 @@ class GUID(TypeDecorator):
 
 
 class Event(db.Model):
-    id = db.Column(GUID(), primary_key=True, default=uuid.uuid4())
+    id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
     title = db.Column(db.String(80), nullable=False)
     start = db.Column(db.DateTime, nullable=False)
     end = db.Column(db.DateTime, nullable=False)
@@ -51,7 +51,6 @@ class Event(db.Model):
 
     @property
     def serialized(self):
-        # shifts = [shift.serialized for shift in self.shifts]
         return {
             'id': self.id,
             'title': self.title,
@@ -71,7 +70,7 @@ class Event(db.Model):
 
 
 class Shift(db.Model):
-    id = db.Column(GUID(), primary_key=True, default=uuid.uuid4())
+    id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
     person = db.Column(db.String(80), nullable=False)
     event_id = db.Column(GUID(), db.ForeignKey('event.id'), nullable=False)
 
