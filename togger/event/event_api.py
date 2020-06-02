@@ -4,36 +4,36 @@ from togger import db
 from .models import Shift, Event
 
 
-def get_events(start, end):
-    user_id = flask_login.current_user.id
-    events = Event.query.filter(Event.owner == user_id).filter(Event.start >= start).filter(Event.end <= end).all()
+def get_events(start, end, calendar_name="default"):
+    calendar_id = flask_login.current_user.calendars[0].id
+    events = Event.query.filter(Event.calendar_id == calendar_id).filter(Event.start >= start).filter(
+        Event.end <= end).all()
     return events
 
 
-def save_event(title, start, end, all_day=False, event_id=None, recurrent=False):
-    print(event_id)
+def save_event(title, start, end, all_day=False, event_id=None, recurrent=False, calendar_name='default'):
     dates = [(start, end)]
-    user_id = flask_login.current_user.id
+    calendar_id = flask_login.current_user.calendars[0].id
     if recurrent:
         start_dates = (list(rrule(freq=WEEKLY, count=5, dtstart=start)))
         end_dates = (list(rrule(freq=WEEKLY, count=5, dtstart=end)))
         dates = list(zip(start_dates, end_dates))
     for start, end in dates:
-        event = Event(title=title, start=start, end=end, all_day=all_day, owner=user_id, id=event_id)
+        event = Event(title=title, start=start, end=end, all_day=all_day, id=event_id, calendar_id=calendar_id)
         db.session.merge(event)
     db.session.commit()
 
 
 def remove_event(event_id):
-    user_id = flask_login.current_user.id
-    event = Event.query.filter(Event.id == event_id).filter(Event.owner == user_id).first()
+    calendar_id = flask_login.current_user.calendars[0].id
+    event = Event.query.filter(Event.id == event_id).filter(Event.calendar_id == calendar_id).first()
     db.session.delete(event)
     db.session.commit()
 
 
 def get_event(event_id):
-    user_id = flask_login.current_user.id
-    return Event.query.filter(Event.id == event_id).filter(Event.owner == user_id).first()
+    calendar_id = flask_login.current_user.calendars[0].id
+    return Event.query.filter(Event.id == event_id).filter(Event.calendar_id == calendar_id).first()
 
 
 def save_shift(event_id, new_person_name, shift_ids_to_remove=[]):

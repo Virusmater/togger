@@ -128,9 +128,10 @@ document.addEventListener('DOMContentLoaded', function() {
         events: '/get_events',
         eventColor: '#9F9C99'
     });
-
+    loadSettings()
     calendar.render();
     // https://stackoverflow.com/questions/61987141/dyanmic-change-text-on-custombuttons
     document.getElementsByClassName("fc-toggleEditButton-button")[0].innerHTML = "edit"
+
 
 });

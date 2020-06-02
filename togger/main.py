@@ -4,10 +4,12 @@ import flask_login
 from flask import request, render_template, jsonify, redirect
 from togger import application
 from togger.event import event_api
+from togger.calendar import calendar_api
 from .auth import auth
 from .event.models import Event
 
 application.register_blueprint(auth.bp)
+
 
 @application.route('/')
 @flask_login.login_required
@@ -15,7 +17,14 @@ def main():
     return render_template('main.html')
 
 
+@application.route('/settings')
+@flask_login.login_required
+def render_settings():
+    return render_template('settings.html', settings=calendar_api.get_settings())
+
+
 @application.route('/get_events', methods=['GET'])
+@flask_login.login_required
 def get_events():
     start = parser.parse(request.args.get('start'))
     end = parser.parse(request.args.get('end'))
@@ -24,6 +33,7 @@ def get_events():
 
 
 @application.route('/render_shifts', methods=['GET'])
+@flask_login.login_required
 def render_shifts():
     event_id = request.args.get('id')
     is_editable = bool(strtobool(request.args.get('isEditable')))
@@ -33,6 +43,7 @@ def render_shifts():
 
 
 @application.route('/render_event', methods=['GET'])
+@flask_login.login_required
 def render_event():
     if request.args.get('id'):
         event = event_api.get_event(request.args.get('id'))
@@ -43,6 +54,7 @@ def render_event():
 
 
 @application.route('/post_event', methods=['POST'])
+@flask_login.login_required
 def post_event(all_day=False, event_id=None, recurrent=False):
     start = parser.parse(request.form['startDateTime'])
     end = parser.parse(request.form['endDateTime'])
@@ -58,6 +70,7 @@ def post_event(all_day=False, event_id=None, recurrent=False):
 
 
 @application.route('/remove_event', methods=['POST'])
+@flask_login.login_required
 def remove_event():
     event_id = request.form['eventId']
     event_api.remove_event(event_id)
@@ -65,6 +78,7 @@ def remove_event():
 
 
 @application.route('/post_shifts', methods=['POST'])
+@flask_login.login_required
 def post_shift(person_name=None):
     event_id = request.form['eventId']
     if request.form['newNameText']:
@@ -76,3 +90,19 @@ def post_shift(person_name=None):
             shift_ids_to_remove.append(shift_id)
     event_api.save_shift(event_id=event_id, new_person_name=person_name, shift_ids_to_remove=shift_ids_to_remove)
     return redirect("/")
+
+
+@application.route('/post_settings', methods=['POST'])
+@flask_login.login_required
+def post_settings():
+    settings = {'scrollTime': request.form['scrollTime'], 'firstDay': request.form['firstDay'],
+                'slotMinTime': request.form['slotMinTime'], 'slotMaxTime': request.form['slotMaxTime'],
+                'nextDayThreshold': request.form['nextDayThreshold']}
+    calendar_api.save_settings(settings)
+    return redirect("/")
+
+
+@application.route('/get_settings', methods=['GET'])
+@flask_login.login_required
+def get_settings():
+    return jsonify(calendar_api.get_settings())

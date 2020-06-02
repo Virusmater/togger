@@ -25,3 +25,17 @@ url = '/remove_event'
 function isMobile(){
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 }
+
+function loadSettings() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        settings = JSON.parse(this.responseText)
+        for (let [key, value] of Object.entries(settings)) {
+            calendar.setOption(`${key}`, `${value}`);
+        }
+    }
+  };
+  xhttp.open("GET", "/get_settings", true);
+  xhttp.send();
+}

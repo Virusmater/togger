@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
-    <title>Togger</title>
+    <title>Togger - settings</title>
     <script crossorigin="anonymous"
             integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
             src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -15,15 +15,8 @@
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
             src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel=icon href="{{ url_for('static', filename='favicon.png') }}" sizes="57x57" type="image/png">
-    <link href="{{ url_for(
-    'static', filename='main.min.css') }}" rel='stylesheet' />
-    <script src="{{ url_for(
-    'static', filename='main.min.js') }}"></script>
     <script src="{{ url_for('static', filename='togger-utils.js') }}"></script>
-
-    <script>{% include 'fullcalendar.js' %}</script>
-    <link href="{{ url_for(
-    'static', filename='togger.css') }}" rel='stylesheet' />
+    <link href="{{ url_for('static', filename='togger.css') }}" rel='stylesheet' />
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark ">
@@ -56,12 +49,30 @@
   </div>
 </nav>
 
-<main role="main">
-
-<div id='calendar-container'>
-    <div id='calendar'></div>
-</div>
-
+<main role="main" class="container">
+<form action="/post_settings" method="post">
+  <div class="form-group">
+    <label for="scrollTime">scrollTime</label>
+    <input type="text" class="form-control" name="scrollTime" id="scrollTime" placeholder="16:00:00" value="{{ settings.scrollTime }}">
+  </div>
+  <div class="form-group">
+    <label for="firstDay">firstDay</label>
+    <input type="text" class="form-control" name="firstDay" id="firstDay" placeholder="1" value="{{ settings.firstDay }}">
+  </div>
+  <div class="form-group">
+    <label for="slotMinTime">slotMinTime</label>
+    <input type="text" class="form-control" name="slotMinTime" id="slotMinTime" placeholder="09:00:00" value="{{ settings.slotMinTime }}">
+  </div>
+  <div class="form-group">
+    <label for="firstDay">slotMaxTime</label>
+    <input type="text" class="form-control" name="slotMaxTime" id="slotMaxTime" placeholder="29:00:00" value="{{ settings.slotMaxTime }}">
+  </div>
+  <div class="form-group">
+    <label for="firstDay">nextDayThreshold</label>
+    <input type="text" class="form-control" name="nextDayThreshold" id="nextDayThreshold" placeholder="09:00:00" value="{{ settings.nextDayThreshold }}">
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 </main>
 <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="modal" role="dialog"
      tabindex="-1">
