@@ -14,4 +14,6 @@ db = SQLAlchemy(application)
 
 from .event import models
 from .auth import models
+from .calendar import models
+
 db.create_all()
