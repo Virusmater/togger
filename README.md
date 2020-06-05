@@ -57,4 +57,6 @@ The repository also contains Procfile and Dockerfile to run the app on heroku
 * multiple calendars per user
 * security hardening
 * additional info inside of events
+* ARM support for docker
+* Docker image with postgresql included
 * ????
