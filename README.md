@@ -1,5 +1,5 @@
 # togger
-Togger a is easy to use sign up tool for volunteers. Also can be used for various events planing like football matches 
+Togger is an easy to use sign up sheet for volunteers. Also can be used for various events planing like football matches 
 or going out with friends
 
 Demo: https://togger-app.herokuapp.com . Can take few moments for a cold boot. 
