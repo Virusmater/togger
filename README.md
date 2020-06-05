@@ -9,6 +9,7 @@ Registration doesn't require an email verification.
 * Count number of shifts per person for a given period
 * Different colors for events based on number of people signed up: gray - nobody yet, orange - one person, green - two or more
 * Mobile friendly
+* Recurrent events (very limited support)
 * Powered by Flask, Fullcalendar and many more
 
 # how to use
@@ -19,7 +20,10 @@ Registration doesn't require an email verification.
 5. Uncheck a person from the list to remove them from an event
 
 # screenshots
-
+![week view](/screenshots/week_view.png?raw=true "Week View")
+![event view](/screenshots/event_view.png?raw=true "Event View")
+![create view](/screenshots/create_view.png?raw=true "Create View")
+![report_view](/screenshots/report_view.png?raw=true "Report View")
 
 # docker-compose
 ```
@@ -37,7 +41,7 @@ services:
       - "5001:80"
 ```
 * Change SECRET_KEY to something more secure
-* Put your database uri in SQLALCHEMY_DATABASE_URI (or use sqlite by default)
+* Put your database uri in SQLALCHEMY_DATABASE_URI or use sqlite by default (was tested with sqlite and postgresql only)
 
 run
 
@@ -46,3 +50,11 @@ run
 Currently ARM isn't supported, but feel free to use your own base image.
 
 The repository also contains Procfile and Dockerfile to run the app on heroku
+
+# TODO
+* improve recurrent events
+* add LDAP auth
+* multiple calendars per user
+* security hardening
+* additional info inside of events
+* ????
