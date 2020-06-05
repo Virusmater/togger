@@ -12,7 +12,7 @@ from togger.database import GUID
 class User(db.Model, UserMixin):
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
     username = db.Column(db.String(80), nullable=False)
-    password = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
     calendars = db.relationship('Calendar', backref='User', cascade="all,delete", lazy=True)
 
     def set_password(self, password):
