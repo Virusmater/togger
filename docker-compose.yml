@@ -2,7 +2,11 @@ version: '3'
 services:
   togger:
     restart: always
-    env_file: .env
+    environment:
+      - SECRET_KEY=change-me
+      - SQLALCHEMY_DATABASE_URI=sqlite:///resources/database.db
+      - MODULE_NAME=togger.main
+      - VARIABLE_NAME=application
     build: .
     ports:
       - "5001:80"
