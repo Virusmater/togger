@@ -1,10 +1,13 @@
+from datetime import datetime, timedelta
 from distutils.util import strtobool
+from dateutil.tz import UTC
 from dateutil import parser
 import flask_login
 from flask import request, render_template, jsonify, redirect
 from togger import application
 from togger.event import event_api
 from togger.calendar import calendar_api
+from togger.auth import auth_api
 from .auth import auth
 from .event.models import Event
 
@@ -14,7 +17,7 @@ application.register_blueprint(auth.bp)
 @application.route('/')
 @flask_login.login_required
 def main():
-    return render_template('main.html')
+    return render_template('main.html', settings=calendar_api.get_settings(), current_user=flask_login.current_user)
 
 
 @application.route('/settings')
@@ -23,11 +26,26 @@ def render_settings():
     return render_template('settings.html', settings=calendar_api.get_settings())
 
 
+@application.route('/report', methods=['GET'])
+@flask_login.login_required
+def render_report():
+    start_str = request.args.get('start')
+    if not start_str:
+        start_str = datetime.today().strftime('%d-%m-%Y')
+    start = parser.parse(start_str, dayfirst=True).astimezone(UTC)
+    end_str = request.args.get('end')
+    if not end_str:
+        end_str = datetime.today().strftime('%d-%m-%Y')
+    end = (parser.parse(end_str, dayfirst=True) + timedelta(days=1)).astimezone(UTC)
+    report = event_api.get_report(start=start, end=end)
+    return render_template('report.html', report=report, start=start_str, end=end_str)
+
+
 @application.route('/get_events', methods=['GET'])
 @flask_login.login_required
 def get_events():
-    start = parser.parse(request.args.get('start'))
-    end = parser.parse(request.args.get('end'))
+    start = parser.isoparse(request.args.get('start')).astimezone(UTC)
+    end = parser.isoparse(request.args.get('end')).astimezone(UTC)
     events = [event.serialized for event in event_api.get_events(start, end)]
     return jsonify(events)
 
@@ -53,6 +71,12 @@ def render_event():
     return render_template('event_modal.html', event=event)
 
 
+@application.route('/render_password', methods=['GET'])
+@flask_login.login_required
+def render_password():
+    return render_template('password_modal.html')
+
+
 @application.route('/post_event', methods=['POST'])
 @flask_login.login_required
 def post_event(all_day=False, event_id=None, recurrent=False):
@@ -66,7 +90,7 @@ def post_event(all_day=False, event_id=None, recurrent=False):
     if 'eventId' in request.form and request.form['eventId']:
         event_id = request.form['eventId']
     event_api.save_event(title=title, start=start, end=end, all_day=all_day, event_id=event_id, recurrent=recurrent)
-    return redirect("/")
+    return '', 204
 
 
 @application.route('/remove_event', methods=['POST'])
@@ -75,6 +99,18 @@ def remove_event():
     event_id = request.form['eventId']
     event_api.remove_event(event_id)
     return redirect("/")
+
+
+@application.route('/change_password', methods=['POST'])
+@flask_login.login_required
+def change_password():
+    old_password = request.form['oldPassword']
+    new_password = request.form['newPassword']
+    if auth_api.change_password(old_password, new_password):
+        return '', 204
+
+    else:
+        return render_password(), 500
 
 
 @application.route('/post_shifts', methods=['POST'])

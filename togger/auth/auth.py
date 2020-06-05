@@ -33,7 +33,7 @@ def register():
     email = request.form['email']
     if get_user(email) is None:
         user = add_user(email, request.form['password'])
-        flask_login.login_user(user)
+        flask_login.login_user(user, remember=True)
         return redirect(url_for('main'))
     flash('Such user already exists')
     return redirect(url_for('auth.register'))

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Report{% endblock %}
+{% block main %}
+
+<main class="container" role="main">
+    <form action="/report" method="get">
+        <div class="form-row mb-2">
+            <div class="col-auto">
+                <div class="input-group input-daterange" id="input-daterange">
+                    <div class="input-group-prepend">
+                        <input class="form-control" id="start" name="start" placeholder="start" type="text" value="{{ start }}">
+                        <span class="input-group-text">to</span>
+                        <input class="form-control" id="end" name="end" placeholder="end" type="text" value="{{ end }}">
+                    </div>
+                </div>
+            </div>
+                <input class="btn btn-primary" type="submit" value="go">
+        </div>
+    </form>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Shift Count</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in report %}
+        <tr>
+            <td>{{ item.person }} </td>
+            <td>{{ item.total }} </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+    <script type="text/javascript">
+    $('.input-daterange').datepicker({
+        format: 'dd-mm-yyyy',
+        autoclose: true,
+        weekStart: 1
+    });
+
+
+
+
+    </script>
+</main>
+
+{% endblock %}

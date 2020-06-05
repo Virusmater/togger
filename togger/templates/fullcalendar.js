@@ -13,11 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('eventTitle', info.event.title)
         formData.append('eventId', info.event.id)
         formData.append('allDay', info.event.allDay)
-        request.onload = function() {
-            if (this.status >= 200 && this.status < 400) {
-                document.getElementById("modalContent").innerHTML = this.response
-            }
-        };
         // Set up our request
         request.open('POST', '/post_event');
 
@@ -28,11 +23,11 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar = new FullCalendar.Calendar(calendarEl, {
         stickyHeaderDates: true,
         height: 'auto',
-        scrollTime: "16:00:00",
-        firstDay: 1,
-        slotMinTime: "09:00:00",
-        nextDayThreshold: "09:00:00",
-        slotMaxTime: "29:00:00",
+        scrollTime: "{{ settings.scrollTime }}",
+        firstDay: "{{ settings.firstDay }}",
+        slotMinTime: "{{ settings.slotMinTime }}",
+        nextDayThreshold: "{{ settings.nextDayThreshold }}",
+        slotMaxTime: "{{ settings.slotMaxTime }}",
         expandRows: true,
   customButtons: {
         toggleEditButton: {
@@ -90,31 +85,18 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         select: function(info) {
-            var request = new XMLHttpRequest();
-            request.open('GET', '/render_event?startDateTime=' + info.start.toJSON() + '&endDateTime=' + info.end.toJSON() + '&allDay=' + info.allDay, true);
-            request.onload = function() {
-                if (this.status >= 200 && this.status < 400) {
-                    document.getElementById("modalContent").innerHTML = this.response
-                    $("#modal").modal()
-                }
-            };
-            request.send();
+            url = '/render_event?startDateTime=' + info.start.toJSON() + '&endDateTime=' + info.end.toJSON() + '&allDay=' + info.allDay;
+            renderModal(url);
         },
 
         eventClick: function(info) {
-            var request = new XMLHttpRequest();
+            var url;
             if (calendar.getOption("editable")){
-                request.open('GET', '/render_event?id=' + info.event.id, true);
+                url = '/render_event?id=' + info.event.id;
             } else {
-                request.open('GET', '/render_shifts?id=' + info.event.id + '&isEditable=' + calendar.getOption("editable"), true);
+                url = '/render_shifts?id=' + info.event.id + '&isEditable=' + calendar.getOption("editable");
             }
-            request.onload = function() {
-                if (this.status >= 200 && this.status < 400) {
-                    document.getElementById("modalContent").innerHTML = this.response
-                    $("#modal").modal()
-                }
-            };
-            request.send();
+            renderModal(url);
         },
 
         eventResize: postEvent,
@@ -128,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         events: '/get_events',
         eventColor: '#9F9C99'
     });
-    loadSettings()
+//    loadSettings()
     calendar.render();
     // https://stackoverflow.com/questions/61987141/dyanmic-change-text-on-custombuttons
     document.getElementsByClassName("fc-toggleEditButton-button")[0].innerHTML = "edit"

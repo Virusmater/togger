@@ -1,23 +1,15 @@
-function submit_modal(form, modal, action) {
+function submit_modal(form, modal, url) {
         var request = new XMLHttpRequest();
         formData  = new FormData(form);
         request.onload = function() {
         if (this.status >= 200 && this.status < 400) {
             $(modal).modal('hide')
             calendar.refetchEvents()
+        } else {
+            document.getElementById("modalContent").innerHTML = this.response
         }
         };
-        // Set up our request
-        if (action == "postEvent") {
-            url = '/post_event'
-        } else if (action == "postShifts") {
-url = '/post_shifts'
-
-        } else if (action == "removeEvent") {
-url = '/remove_event'
-
-        }
-        request.open( 'POST', url );
+        request.open('POST', url );
         // Send our FormData object; HTTP headers are set automatically
         request.send( formData );
         }
@@ -38,4 +30,16 @@ function loadSettings() {
   };
   xhttp.open("GET", "/get_settings", true);
   xhttp.send();
+}
+
+function renderModal(url) {
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
+            request.onload = function() {
+                if (this.status >= 200 && this.status < 400) {
+                    document.getElementById("modalContent").innerHTML = this.response
+                    $("#modal").modal()
+                }
+            };
+            request.send();
 }

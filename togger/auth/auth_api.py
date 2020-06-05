@@ -1,3 +1,5 @@
+import flask_login
+from flask import flash
 from werkzeug.security import generate_password_hash
 
 from togger import db
@@ -31,3 +33,13 @@ def add_user(username, password):
     db.session.add(user)
     db.session.commit()
     return user
+
+
+def change_password(old_password, new_password):
+    if flask_login.current_user.check_password(old_password):
+        flask_login.current_user.set_password(new_password)
+        db.session.merge(flask_login.current_user)
+        db.session.commit()
+        return True
+    flash('Password is incorrect')
+    return False

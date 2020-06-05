@@ -1,5 +1,7 @@
 import flask_login
 from dateutil.rrule import rrule, WEEKLY
+from sqlalchemy import func
+
 from togger import db
 from .models import Shift, Event
 
@@ -19,7 +21,7 @@ def save_event(title, start, end, all_day=False, event_id=None, recurrent=False,
         end_dates = (list(rrule(freq=WEEKLY, count=5, dtstart=end)))
         dates = list(zip(start_dates, end_dates))
     for start, end in dates:
-        event = Event(title=title, start=start, end=end, all_day=all_day, id=event_id, calendar_id=calendar_id)
+        event = Event(title=title.strip(), start=start, end=end, all_day=all_day, id=event_id, calendar_id=calendar_id)
         db.session.merge(event)
     db.session.commit()
 
@@ -43,7 +45,18 @@ def save_shift(event_id, new_person_name, shift_ids_to_remove=[]):
             if str(shift.id) == shift_id:
                 Shift.query.filter(Shift.id == shift_id).delete()
     if new_person_name:
-        shift = Shift(person=new_person_name, event_id=event_id)
+        shift = Shift(person=new_person_name.strip(), event_id=event_id)
         event.shifts.append(shift)
     db.session.merge(event)
     db.session.commit()
+
+
+def get_report(start, end, calendar_name="default"):
+    calendar_id = flask_login.current_user.calendars[0].id
+    report = db.session.query(Shift.person, func.count(Shift.person).label('total')) \
+        .join(Event.shifts) \
+        .filter(Event.calendar_id == calendar_id) \
+        .filter(Event.start >= start) \
+        .filter(Event.start < end) \
+        .group_by(Shift.person).all()
+    return report

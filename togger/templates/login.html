@@ -3,10 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-    <meta content="" name="description">
-    <meta content="" name="author">
-    <link rel=icon href="{{ url_for('static', filename='favicon.png') }}" sizes="57x57" type="image/png">
-    <title>Togger</title>
+    <link href="{{ url_for('static', filename='favicon.png') }}" rel=icon sizes="57x57" type="image/png">
+    <title>Togger - Sign In</title>
 
     <!-- Bootstrap core CSS -->
     <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
@@ -18,22 +16,24 @@
 
 <body class="text-center">
 
-<form class="form-signin" action='login' method='POST'>
-     <img title="yes, this is a screenshot from logomaster" class="mb-4" height="72" src="{{ url_for('static', filename='logo.png') }}" >
+<form action='login' class="form-signin" method='POST'>
+    <img class="mb-4" height="72" src="{{ url_for('static', filename='logo.png') }}"
+         title="yes, this is a screenshot from logomaster">
     {% with messages = get_flashed_messages() %}
-  {% if messages %}
+    {% if messages %}
     {% for message in messages %}
-      <div class="alert alert-danger" role="alert">"{{ message }}"</div>
+    <div class="alert alert-danger" role="alert">"{{ message }}"</div>
     {% endfor %}
-  {% endif %}
-{% endwith %}
+    {% endif %}
+    {% endwith %}
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
     <label class="sr-only" for="inputEmail">Email address</label>
-    <input autofocus class="form-control" name="email" id="inputEmail" placeholder="Email address" required type="email">
+    <input autofocus class="form-control" id="inputEmail" name="email" placeholder="Email address" required
+           type="email">
     <label class="sr-only" for="inputPassword">Password</label>
-    <input class="form-control" name="password" id="inputPassword" placeholder="Password" required type="password">
+    <input class="form-control" id="inputPassword" name="password" placeholder="Password" required type="password">
     <button class="btn btn-lg btn-primary btn-block mb-2" type="submit">Sign in</button>
-        <a href="register" class="text-decoration-none">or sign up</a>
+    <a class="text-decoration-none" href="register">or sign up</a>
 </form>
 </body>
 </html>
