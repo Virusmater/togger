@@ -1,14 +1,13 @@
 import flask_login
 from flask import flash
-from werkzeug.security import generate_password_hash
-
 from togger import db
-from togger.auth.models import User
+from togger.auth.models import User, Role
 from togger.calendar.models import Calendar
 
 
 def get_users():
     return User.query.all()
+
 
 # TODO: fix me in case of big users table
 def get_user(username):
@@ -27,8 +26,9 @@ def get_user_by_id(id):
 def add_user(username, password):
     if username is None or password is None:
         return
-    calendar = Calendar(name="default")
-    user = User(username=username,calendars=[calendar])
+    calendar = Calendar(name=username)
+    role = Role(type="manager", calendar=calendar)
+    user = User(username=username, roles=[role])
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
@@ -43,3 +43,29 @@ def change_password(old_password, new_password):
         return True
     flash('Password is incorrect')
     return False
+
+
+def get_roles():
+    try:
+        return flask_login.current_user.roles
+    except AttributeError:
+        return []
+
+
+def get_role():
+    for role in get_roles():
+        if role.is_default:
+            return role
+    return None
+
+
+def can_edit_events(func):
+    def func_wrapper(*args, **kwargs):
+        if get_role().can_edit_events:
+            print("can edit")
+            func(*args, **kwargs)
+        else:
+            print("cannpt edit")
+            return None
+    return func_wrapper
+

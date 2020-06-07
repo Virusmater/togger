@@ -1,5 +1,4 @@
 from flask_login import UserMixin
-from sqlalchemy import JSON
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from togger import db
@@ -13,7 +12,7 @@ class User(db.Model, UserMixin):
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
     username = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    calendars = db.relationship('Calendar', backref='User', cascade="all,delete", lazy=True)
+    roles = db.relationship('Role', backref='User', cascade="all,delete", lazy=True)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -21,3 +20,15 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+
+class Role(db.Model):
+    id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
+    type = db.Column(db.String(80), nullable=False)
+    calendar_id = db.Column(GUID(), db.ForeignKey('calendar.id'), nullable=False)
+    calendar = db.relationship("Calendar")
+    user_id = db.Column(GUID(), db.ForeignKey('user.id'), nullable=False)
+    is_default = db.Column(db.Boolean, default=False, nullable=False)
+
+    @property
+    def can_edit_events(self):
+        return self.type == "manager"

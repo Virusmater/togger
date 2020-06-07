@@ -29,23 +29,35 @@ document.addEventListener('DOMContentLoaded', function() {
         nextDayThreshold: "{{ settings.nextDayThreshold }}",
         slotMaxTime: "{{ settings.slotMaxTime }}",
         expandRows: true,
-  customButtons: {
-        toggleEditButton: {
-        // https://stackoverflow.com/questions/61987141/dyanmic-change-text-on-custombuttons
-        text: '',
-              click: function() {
-              if (calendar.getOption('editable')){
-                calendar.setOption('editable',false)
-                calendar.setOption('selectable',false)
-                event.target.innerHTML = "edit"
-              } else {
-                calendar.setOption('editable',true)
-                calendar.setOption('selectable',true)
-                event.target.innerHTML = "stop"
-              }
-              }
-            }}
+        headerToolbar: {
+            left: isMobile() ? 'prev,next' : 'prev,next today',
+            center: 'title',
+            right: isMobile() ? 'dayGridMonth,timeGridDay,listWeek' : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        {% if current_role().can_edit_events %}
+        headerToolbar: {
+            left: isMobile() ? 'prev,next' : 'prev,next today toggleEditButton',
+            center: 'title',
+            right: isMobile() ? 'dayGridMonth,timeGridDay,listWeek' : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        customButtons: {
+            toggleEditButton: {
+            // https://stackoverflow.com/questions/61987141/dyanmic-change-text-on-custombuttons
+            text: '',
+                  click: function() {
+                  if (calendar.getOption('editable')){
+                    calendar.setOption('editable',false)
+                    calendar.setOption('selectable',false)
+                    event.target.innerHTML = "edit"
+                  } else {
+                    calendar.setOption('editable',true)
+                    calendar.setOption('selectable',true)
+                    event.target.innerHTML = "stop"
+                  }
+                  }
+                }}
          ,
+        {% endif %}
         eventTimeFormat: {
             hour: '2-digit',
             minute: '2-digit',
@@ -78,11 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         },
-        headerToolbar: {
-            left: isMobile() ? 'prev,next' : 'prev,next today toggleEditButton',
-            center: 'title',
-            right: isMobile() ? 'dayGridMonth,timeGridDay,listWeek' : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-        },
 
         select: function(info) {
             url = '/render_event?startDateTime=' + info.start.toJSON() + '&endDateTime=' + info.end.toJSON() + '&allDay=' + info.allDay;
@@ -113,7 +120,9 @@ document.addEventListener('DOMContentLoaded', function() {
 //    loadSettings()
     calendar.render();
     // https://stackoverflow.com/questions/61987141/dyanmic-change-text-on-custombuttons
-    document.getElementsByClassName("fc-toggleEditButton-button")[0].innerHTML = "edit"
-
+    var editButton = document.getElementsByClassName("fc-toggleEditButton-button")
+    if (editButton.length > 0){
+        editButton[0].innerHTML = "edit"
+    }
 
 });

@@ -3,19 +3,22 @@ from dateutil.rrule import rrule, WEEKLY
 from sqlalchemy import func
 
 from togger import db
+from togger.calendar import calendar_api
 from .models import Shift, Event
+from ..auth import auth_api
 
 
 def get_events(start, end, calendar_name="default"):
-    calendar_id = flask_login.current_user.calendars[0].id
+    calendar_id = calendar_api.get_current_calendar().id
     events = Event.query.filter(Event.calendar_id == calendar_id).filter(Event.start >= start).filter(
         Event.end <= end).all()
     return events
 
 
+@auth_api.can_edit_events
 def save_event(title, start, end, all_day=False, event_id=None, recurrent=False, calendar_name='default'):
     dates = [(start, end)]
-    calendar_id = flask_login.current_user.calendars[0].id
+    calendar_id = calendar_api.get_current_calendar().id
     if recurrent:
         start_dates = (list(rrule(freq=WEEKLY, count=5, dtstart=start)))
         end_dates = (list(rrule(freq=WEEKLY, count=5, dtstart=end)))
@@ -26,15 +29,16 @@ def save_event(title, start, end, all_day=False, event_id=None, recurrent=False,
     db.session.commit()
 
 
+@auth_api.can_edit_events
 def remove_event(event_id):
-    calendar_id = flask_login.current_user.calendars[0].id
+    calendar_id = calendar_api.get_current_calendar().id
     event = Event.query.filter(Event.id == event_id).filter(Event.calendar_id == calendar_id).first()
     db.session.delete(event)
     db.session.commit()
 
 
 def get_event(event_id):
-    calendar_id = flask_login.current_user.calendars[0].id
+    calendar_id = calendar_api.get_current_calendar().id
     return Event.query.filter(Event.id == event_id).filter(Event.calendar_id == calendar_id).first()
 
 
@@ -52,7 +56,7 @@ def save_shift(event_id, new_person_name, shift_ids_to_remove=[]):
 
 
 def get_report(start, end, calendar_name="default"):
-    calendar_id = flask_login.current_user.calendars[0].id
+    calendar_id = calendar_api.get_current_calendar().id
     report = db.session.query(Shift.person, func.count(Shift.person).label('total')) \
         .join(Event.shifts) \
         .filter(Event.calendar_id == calendar_id) \

@@ -48,16 +48,31 @@
                    href="#"
                    id="dropdown01">Calendars</a>
                 <div aria-labelledby="dropdown01" class="dropdown-menu">
-                    <a class="dropdown-item active" href="#">Default</a>
+                    <form action="/set_default" method="post">
+                    {% for role in roles() %}
+                    {% if role.is_default %}
+                    <button type="submit" name="calendarId" value="{{ role.calendar_id }}" class="dropdown-item active show">{{ role.calendar.name }}</button>
+                    {% else %}
+                    <button type="submit" name="calendarId" value="{{ role.calendar_id }}" class="dropdown-item show">{{ role.calendar.name }}</button>
+                    {% endif %}
+                    {% endfor %}
+                    </form>
                 </div>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/report">Report</a>
             </li>
+            {% if current_role().can_edit_events %}
+            <button class="btn btn-secondary"
+                    onclick="renderModal('/render_share')" type="button">
+                Share
+            </button>
+            {% endif %}
         </ul>
 
         <div class="btn-group">
-            <button aria-expanded="false" aria-haspopup="true" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+            <button aria-expanded="false" aria-haspopup="true" class="btn btn-secondary dropdown-toggle"
+                    data-toggle="dropdown"
                     type="button">
                 {{ current_user.username }}
             </button>

@@ -27,3 +27,8 @@
   .input-daterange input {
     width: 100px;
   }
+
+    .input-group .input-group-append > .custom-select {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }

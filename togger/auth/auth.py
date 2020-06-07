@@ -11,32 +11,33 @@ login_manager = LoginManager()
 def login():
     if request.method == 'GET':
         if flask_login.current_user.is_authenticated:
-            return redirect(url_for('main'))
+            return redirect(url_for('main', **request.args))
         else:
-            return render_template('login.html')
+            return render_template('login.html', query_string=request.query_string.decode('utf-8'))
     email = request.form['email']
     user = get_user(email)
     if user and user.check_password(request.form['password']):
         flask_login.login_user(user)
-        return redirect(url_for('main'))
+        return redirect(url_for('main', **request.args))
     flash('Incorrect login or/and password. Please check it and try again')
-    return redirect(url_for('auth.login'))
+    print(str(request.args))
+    return redirect(url_for('auth.login', **request.args))
 
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         if flask_login.current_user.is_authenticated:
-            return redirect(url_for('main'))
+            return redirect(url_for('main', **request.args))
         else:
-            return render_template('register.html')
+            return render_template('register.html', query_string=request.query_string.decode('utf-8'))
     email = request.form['email']
     if get_user(email) is None:
         user = add_user(email, request.form['password'])
         flask_login.login_user(user, remember=True)
-        return redirect(url_for('main'))
+        return redirect(url_for('main', **request.args))
     flash('Such user already exists')
-    return redirect(url_for('auth.register'))
+    return redirect(url_for('auth.register', **request.args))
 
 
 @bp.route("/logout")
@@ -53,7 +54,7 @@ def user_loader(id):
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('auth.login', **request.args))
 
 
 @bp.record_once

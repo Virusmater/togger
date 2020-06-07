@@ -43,3 +43,18 @@ function renderModal(url) {
             };
             request.send();
 }
+
+
+function changeShare(form, modal, url) {
+        var request = new XMLHttpRequest();
+        formData  = new FormData(form);
+        request.onload = function() {
+        if (this.status >= 200 && this.status < 400) {
+            document.getElementById("shareUrl").value = this.response
+
+        }
+        };
+        request.open('POST', url );
+        // Send our FormData object; HTTP headers are set automatically
+        request.send( formData );
+        }
