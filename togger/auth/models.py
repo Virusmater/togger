@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
 
 class Role(db.Model):
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
-    type = db.Column(db.String(80), nullable=False)
+    type = db.Column(db.String(256), nullable=False)
     calendar_id = db.Column(GUID(), db.ForeignKey('calendar.id'), nullable=False)
     calendar = db.relationship("Calendar")
     user_id = db.Column(GUID(), db.ForeignKey('user.id'), nullable=False)
@@ -31,5 +31,4 @@ class Role(db.Model):
 
     @property
     def can_edit_events(self):
-        print("type", self.type)
         return self.type == "manager"

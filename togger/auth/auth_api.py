@@ -41,24 +41,20 @@ def change_password(old_password, new_password):
         db.session.merge(flask_login.current_user)
         db.session.commit()
         return True
-    flash('Password is incorrect')
+    flash('Current password is incorrect')
     return False
 
 
 def get_roles():
-    print("get_roles")
     try:
-        print("all roles", str(flask_login.current_user.roles))
         return flask_login.current_user.roles
     except AttributeError:
         return []
 
 
 def get_role():
-    print("get_role")
     for role in get_roles():
         if role.is_default:
-            print("default role ", str(role))
             return role
     return None
 

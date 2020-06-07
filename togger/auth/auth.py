@@ -20,7 +20,6 @@ def login():
         flask_login.login_user(user)
         return redirect(url_for('main', **request.args))
     flash('Incorrect login or/and password. Please check it and try again')
-    print(str(request.args))
     return redirect(url_for('auth.login', **request.args))
 
 

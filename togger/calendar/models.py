@@ -20,13 +20,13 @@ def gen_valid_until():
 class Calendar(db.Model):
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
     settings = db.Column(JSON, default=default_settings)
-    name = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(256), nullable=False)
     events = db.relationship('Event', backref='Calendar', cascade="all,delete", lazy=True)
 
 
 class Share(db.Model):
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
-    role_name = db.Column(db.String(80), nullable=False)
+    role_name = db.Column(db.String(256), nullable=False)
     valid_until = db.Column(db.DateTime, nullable=False, default=gen_valid_until)
     calendar_id = db.Column(GUID(), db.ForeignKey('calendar.id'), nullable=False)
     calendar = db.relationship("Calendar")
