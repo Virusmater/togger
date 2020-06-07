@@ -27,7 +27,7 @@ def add_user(username, password):
     if username is None or password is None:
         return
     calendar = Calendar(name=username)
-    role = Role(type="manager", calendar=calendar)
+    role = Role(type="manager", calendar=calendar, is_default=True)
     user = User(username=username, roles=[role])
     user.set_password(password)
     db.session.add(user)
@@ -46,15 +46,19 @@ def change_password(old_password, new_password):
 
 
 def get_roles():
+    print("get_roles")
     try:
+        print("all roles", str(flask_login.current_user.roles))
         return flask_login.current_user.roles
     except AttributeError:
         return []
 
 
 def get_role():
+    print("get_role")
     for role in get_roles():
         if role.is_default:
+            print("default role ", str(role))
             return role
     return None
 
@@ -62,10 +66,8 @@ def get_role():
 def can_edit_events(func):
     def func_wrapper(*args, **kwargs):
         if get_role().can_edit_events:
-            print("can edit")
-            func(*args, **kwargs)
+            return func(*args, **kwargs)
         else:
-            print("cannpt edit")
             return None
     return func_wrapper
 

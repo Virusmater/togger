@@ -6,6 +6,7 @@ from togger.database import GUID
 class Event(db.Model):
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
     title = db.Column(db.String(80), nullable=False)
+    description = db.Column(db.Text, nullable=False)
     start = db.Column(db.DateTime, nullable=False)
     end = db.Column(db.DateTime, nullable=False)
     all_day = db.Column(db.Boolean, default=False, nullable=False)
@@ -18,6 +19,7 @@ class Event(db.Model):
         return {
             'id': self.id,
             'title': self.title,
+            'description': self.description,
             'start': self.start.isoformat() + 'Z',
             'end': self.end.isoformat() + 'Z',
             'color': self.get_color(),

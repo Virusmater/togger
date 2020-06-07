@@ -16,6 +16,11 @@
                         <input class="form-control mt-2" id="eventTitle" name="eventTitle" placeholder="put event name"
                                type="text" value="{{ event.title }}">
                     </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Description</label>
+                        <textarea class="form-control" name="eventDescription" id="eventDescription" rows="3"></textarea>
+                    </div>
+
                     <div class="form-check">
                         <input class="form-check-input" id="isRecurrent" name="isRecurrent" type="checkbox">
                         <label class="form-check-label" for="isRecurrent">Repeat every week next 5 weeks</label>

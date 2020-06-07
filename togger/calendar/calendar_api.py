@@ -37,7 +37,7 @@ def share_calendar(role_name):
 def accept_share(share_id):
     share = Share.query.filter(Share.id == share_id).first()
     if datetime.now() < share.valid_until:
-        role = Role(type="manager", calendar_id=share.calendar_id, is_default=False)
+        role = Role(type="manager", calendar_id=share.calendar_id, is_default=True)
         flask_login.current_user.roles.append(role)
         db.session.merge(flask_login.current_user)
         db.session.commit()

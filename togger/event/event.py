@@ -65,13 +65,15 @@ def post_event(all_day=False, event_id=None, recurrent=False):
     start = parser.parse(request.form['startDateTime'])
     end = parser.parse(request.form['endDateTime'])
     title = request.form['eventTitle']
+    description = request.form['eventDescription']
     if 'isRecurrent' in request.form:
         recurrent = request.form['isRecurrent']
     if 'allDay' in request.form:
         all_day = bool(strtobool(request.form['allDay']))
     if 'eventId' in request.form and request.form['eventId']:
         event_id = request.form['eventId']
-    event_api.save_event(title=title, start=start, end=end, all_day=all_day, event_id=event_id, recurrent=recurrent)
+    event_api.save_event(title=title, description=description, start=start, end=end, all_day=all_day,
+                         event_id=event_id, recurrent=recurrent)
     return '', 204
 
 

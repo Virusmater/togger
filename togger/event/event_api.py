@@ -10,13 +10,13 @@ from ..auth import auth_api
 
 def get_events(start, end, calendar_name="default"):
     calendar_id = calendar_api.get_current_calendar().id
-    events = Event.query.filter(Event.calendar_id == calendar_id).filter(Event.start >= start).filter(
-        Event.end <= end).all()
+    events = Event.query.filter(Event.calendar_id == calendar_id).filter(Event.start <= end).filter(
+        Event.end >= start).all()
     return events
 
 
 @auth_api.can_edit_events
-def save_event(title, start, end, all_day=False, event_id=None, recurrent=False, calendar_name='default'):
+def save_event(title, description, start, end, all_day=False, event_id=None, recurrent=False, calendar_name='default'):
     dates = [(start, end)]
     calendar_id = calendar_api.get_current_calendar().id
     if recurrent:
@@ -24,7 +24,8 @@ def save_event(title, start, end, all_day=False, event_id=None, recurrent=False,
         end_dates = (list(rrule(freq=WEEKLY, count=5, dtstart=end)))
         dates = list(zip(start_dates, end_dates))
     for start, end in dates:
-        event = Event(title=title.strip(), start=start, end=end, all_day=all_day, id=event_id, calendar_id=calendar_id)
+        event = Event(title=title.strip(), description=description,
+                      start=start, end=end, all_day=all_day, id=event_id, calendar_id=calendar_id)
         db.session.merge(event)
     db.session.commit()
 
@@ -60,7 +61,7 @@ def get_report(start, end, calendar_name="default"):
     report = db.session.query(Shift.person, func.count(Shift.person).label('total')) \
         .join(Event.shifts) \
         .filter(Event.calendar_id == calendar_id) \
-        .filter(Event.start >= start) \
-        .filter(Event.start < end) \
+        .filter(Event.start <= end)\
+        .filter(Event.end >= start) \
         .group_by(Shift.person).all()
     return report

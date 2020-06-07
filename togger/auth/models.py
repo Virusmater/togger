@@ -31,4 +31,5 @@ class Role(db.Model):
 
     @property
     def can_edit_events(self):
+        print("type", self.type)
         return self.type == "manager"

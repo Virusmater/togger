@@ -49,13 +49,17 @@
                    id="dropdown01">Calendars</a>
                 <div aria-labelledby="dropdown01" class="dropdown-menu">
                     <form action="/set_default" method="post">
-                    {% for role in roles() %}
-                    {% if role.is_default %}
-                    <button type="submit" name="calendarId" value="{{ role.calendar_id }}" class="dropdown-item active show">{{ role.calendar.name }}</button>
-                    {% else %}
-                    <button type="submit" name="calendarId" value="{{ role.calendar_id }}" class="dropdown-item show">{{ role.calendar.name }}</button>
-                    {% endif %}
-                    {% endfor %}
+                        {% for role in roles() %}
+                        {% if role.is_default %}
+                        <button class="dropdown-item active show" name="calendarId" type="submit"
+                                value="{{ role.calendar_id }}">{{ role.calendar.name }}
+                        </button>
+                        {% else %}
+                        <button class="dropdown-item show" name="calendarId" type="submit"
+                                value="{{ role.calendar_id }}">{{ role.calendar.name }}
+                        </button>
+                        {% endif %}
+                        {% endfor %}
                     </form>
                 </div>
             </li>
@@ -63,10 +67,14 @@
                 <a class="nav-link" href="/report">Report</a>
             </li>
             {% if current_role().can_edit_events %}
+                        <li class="nav-item">
+
             <button class="btn btn-secondary"
                     onclick="renderModal('/render_share')" type="button">
                 Share
             </button>
+                                        </li>
+
             {% endif %}
         </ul>
 
