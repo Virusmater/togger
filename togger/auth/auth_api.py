@@ -23,14 +23,23 @@ def get_user_by_id(id):
     return next((item for item in get_users() if str(item.id) == id), None)
 
 
-def add_user(username, password):
+def add_user(username, password, first_name, last_name):
     if username is None or password is None:
         return
     calendar = Calendar(name=username)
     role = Role(type="manager", calendar=calendar, is_default=True)
-    user = User(username=username, roles=[role])
+    user = User(username=username, first_name=first_name, last_name=last_name, roles=[role])
     user.set_password(password)
     db.session.add(user)
+    db.session.commit()
+    return user
+
+
+def update_user(first_name, last_name):
+    user = flask_login.current_user
+    user.first_name = first_name
+    user.last_name = last_name
+    db.session.merge(user)
     db.session.commit()
     return user
 

@@ -4,13 +4,10 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link href="{{ url_for('static', filename='favicon.png') }}" rel=icon sizes="57x57" type="image/png">
-
     <title>Togger - Sign Up</title>
-
     <!-- Bootstrap core CSS -->
     <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" rel="stylesheet">
-
     <!-- Custom styles for this template -->
     <link href="{{ url_for('static', filename='signin.css') }}" rel="stylesheet">
 </head>
@@ -28,9 +25,13 @@
     {% endif %}
     {% endwith %}
     <h1 class="h3 mb-3 font-weight-normal">Please register</h1>
+    <input class="form-control" id="inputFirstName" name="firstName" placeholder="First name" required
+           type="text" maxlength="80">
+    <input class="form-control" id="inputLastName" name="lastName" placeholder="Last name" required
+           type="text" maxlength="80">
     <label class="sr-only" for="inputEmail">Email address</label>
     <input autofocus class="form-control" id="inputEmail" name="email" placeholder="Email address" required
-           type="email" maxlength="256">
+           type="email" maxlength="80">
     <label class="sr-only" for="inputPassword">Password</label>
     <input class="form-control" id="inputPassword" name="password" placeholder="Password" required type="password">
     <button class="btn btn-lg btn-primary btn-block mb-2" type="submit">Sign up</button>

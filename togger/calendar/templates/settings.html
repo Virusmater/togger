@@ -2,6 +2,7 @@
 {% block title %}Settings{% endblock %}
 {% block main %}
 <main role="main" class="container">
+    <h1>Current settings for {{ current_role().calendar.name }}</h1>
 <form action="/post_settings" method="post">
   <div class="form-group">
     <label for="scrollTime">scrollTime</label>

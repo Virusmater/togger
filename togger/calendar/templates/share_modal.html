@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <h5 class="modal-title">Share calendar</h5>
+    <h5 class="modal-title">Share calendar {{ current_role().calendar.name }}</h5>
     <button aria-label="Close" class="close" data-dismiss="modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -13,18 +13,19 @@
     {% endif %}
     {% endwith %}
     <form id="modalForm" onsubmit="return false">
+          <div class="form-group">
         <label for="shareUrl">Share URL</label>
         <div class="input-group mb-3">
-
             <input class="form-control" id="shareUrl" name="url" type="text" placeholder="Select the permission first >" readonly>
               <div class="input-group-append ">
-              <select onchange="changeShare(modalForm, modal, '/post_share')" class="custom-select" name="roleName" id="roleName" aria-label="Example select with button addon">
+              <select autofocus onchange="newShare(modalForm, modal, '/post_share')" class="custom-select" name="roleName" id="roleName" aria-label="Example select with button addon">
                 <option value="" selected>Permission...</option>
                 <option value="user">View</option>
                 <option value="manager">Edit</option>
               </select>
               </div>
         </div>
+        <small id="shareHelp" class="form-text text-muted">The link will be active next 7 days.</small>  </div>
     </form>
 </div>
 <div class="modal-footer">

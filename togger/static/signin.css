@@ -37,13 +37,20 @@ body {
 .form-signin .form-control:focus {
   z-index: 2;
 }
-.form-signin input[type="email"] {
+
+.form-signin input#inputFirstName.form-control {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
+
 .form-signin input[type="password"] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+.form-signin input#inputLastName.form-control, input#inputEmail.form-control {
+  margin-bottom: -1px;
+  border-radius: 0;
 }

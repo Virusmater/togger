@@ -45,7 +45,7 @@ function renderModal(url) {
 }
 
 
-function changeShare(form, modal, url) {
+function newShare(form, modal, url) {
         var request = new XMLHttpRequest();
         formData  = new FormData(form);
         request.onload = function() {
@@ -58,3 +58,20 @@ function changeShare(form, modal, url) {
         // Send our FormData object; HTTP headers are set automatically
         request.send( formData );
         }
+
+
+function changeShare(form, url) {
+        var request = new XMLHttpRequest();
+        formData  = new FormData(form);
+        request.open('POST', url );
+        // Send our FormData object; HTTP headers are set automatically
+        request.send( formData );
+        }
+
+function signMyself(firstName, lastName) {
+        document.getElementById("newName").value = firstName + " " + lastName
+        }
+
+$(document).on('shown.bs.modal', function (e) {
+    $('[autofocus]', e.target).focus();
+});
