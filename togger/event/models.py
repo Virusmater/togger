@@ -13,7 +13,6 @@ class Event(db.Model):
     shifts = db.relationship('Shift', backref='Event', cascade="all,delete", lazy=True)
     calendar_id = db.Column(GUID(), db.ForeignKey('calendar.id'), nullable=False)
 
-
     @property
     def serialized(self):
         return {

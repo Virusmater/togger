@@ -1,5 +1,6 @@
 import uuid
 from datetime import timedelta, date
+from json import loads
 
 from sqlalchemy import JSON
 from togger import db
@@ -22,6 +23,10 @@ class Calendar(db.Model):
     settings = db.Column(JSON, default=default_settings)
     name = db.Column(db.String(256), nullable=False)
     events = db.relationship('Event', backref='Calendar', cascade="all,delete", lazy=True)
+    roles = db.relationship('Role', backref='Calendar', cascade="all,delete", lazy=True)
+
+    def get_settings(self):
+        return loads(self.settings)
 
 
 class Share(db.Model):

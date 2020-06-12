@@ -20,10 +20,6 @@ def save_settings(settings):
     return True
 
 
-def get_settings():
-    return loads(get_current_calendar().settings)
-
-
 @auth_api.can_edit_events
 def share_calendar(role_name):
     if role_name in ROLES:
@@ -73,6 +69,8 @@ def get_current_calendar():
     for role in flask_login.current_user.roles:
         if role.is_default:
             return role.calendar
+    else:
+        return None
     return role.calendar
 
 
@@ -93,3 +91,13 @@ def create(calendar_name):
     db.session.merge(user)
     db.session.commit()
     return calendar
+
+
+@auth_api.can_edit_events
+def delete():
+    print("start delete")
+    db.session.delete(get_current_calendar())
+    print("after delete")
+    db.session.commit()
+    print("after commit")
+

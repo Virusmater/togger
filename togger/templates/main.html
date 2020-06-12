@@ -7,15 +7,25 @@
     'static', filename='main.min.css') }}" rel='stylesheet' />
     <script src="{{ url_for(
     'static', filename='main.min.js') }}"></script>
-    {% with settings=settings %}
+    {% if calendar %}
+    {% with settings=calendar.get_settings() %}
         <script>{% include 'fullcalendar.js' %}</script>
     {% endwith %}
+    {% endif %}
 {% endblock %}
 {% block main %}
 
 <main role="main">
+    {% if calendar %}
     <div id='calendar-container'>
         <div id='calendar'></div>
     </div>
+    {% else %}
+    <div class="container">
+        <div class="alert alert-warning" role="alert">
+    Looks like you don't have any calendar selected. Select the one from the menu above or create a new one
+</div>
+    </div>
+    {% endif %}
 </main>
 {% endblock %}

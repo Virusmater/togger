@@ -70,7 +70,8 @@ def get_role():
 
 def can_edit_events(func):
     def func_wrapper(*args, **kwargs):
-        if get_role().can_edit_events:
+        role = get_role()
+        if role and role.can_edit_events:
             return func(*args, **kwargs)
         else:
             return None

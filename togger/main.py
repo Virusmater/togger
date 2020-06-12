@@ -18,7 +18,7 @@ def main():
     if request.args.get('share'):
         calendar_api.accept_share(request.args.get('share'))
         return redirect(url_for('main'))
-    return render_template('main.html', settings=calendar_api.get_settings(), current_user=flask_login.current_user)
+    return render_template('main.html', calendar=calendar_api.get_current_calendar(), current_user=flask_login.current_user)
 
 
 @application.route('/render_password', methods=['GET'])

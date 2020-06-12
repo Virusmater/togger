@@ -14,7 +14,7 @@ login_manager = LoginManager()
 @application.route('/settings')
 @flask_login.login_required
 def render_settings():
-    return render_template('settings.html', settings=calendar_api.get_settings())
+    return render_template('settings.html', settings=calendar_api.get_current_calendar().get_settings())
 
 
 @application.route('/create', methods=['POST'])
@@ -22,6 +22,26 @@ def render_settings():
 def create_calendar():
     calendar_name = request.form['calendarName']
     calendar_api.create(calendar_name)
+    return redirect(url_for('main'))
+
+
+@application.route('/render_delete', methods=['GET'])
+@flask_login.login_required
+def render_delete():
+    return render_template('delete_modal.html')
+
+
+@application.route('/calendars', methods=['POST'])
+@flask_login.login_required
+def post_calendars():
+    if request.form['_method'] == "DELETE":
+        return delete_calendar()
+
+
+@application.route('/calendars', methods=['DELETE'])
+@flask_login.login_required
+def delete_calendar():
+    calendar_api.delete()
     return redirect(url_for('main'))
 
 

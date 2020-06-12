@@ -43,7 +43,7 @@
             <li class="nav-item dropdown active">
                 <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
                    href="#"
-                   id="dropdown01">Calendar: {{ current_role().calendar.name }}</a>
+                   id="dropdown01">Calendar: {{ current_role().calendar.name if current_role() else None  }}</a>
                 <div aria-labelledby="dropdown01" class="dropdown-menu">
                     <form action="/set_default" method="post">
                         {% for role in roles() %}

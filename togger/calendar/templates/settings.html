@@ -25,6 +25,10 @@
     <input type="text" class="form-control" name="nextDayThreshold" id="nextDayThreshold" placeholder="09:00:00" value="{{ settings.nextDayThreshold }}">
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
+          <button class="btn btn-danger float-right"
+                onclick="renderModal('/render_delete')" type="button">
+            Delete calendar
+        </button>
 </form>
 </main>
 {% endblock %}
