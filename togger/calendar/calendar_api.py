@@ -95,9 +95,5 @@ def create(calendar_name):
 
 @auth_api.can_edit_events
 def delete():
-    print("start delete")
     db.session.delete(get_current_calendar())
-    print("after delete")
     db.session.commit()
-    print("after commit")
-

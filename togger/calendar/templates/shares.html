@@ -2,6 +2,7 @@
 {% block title %}Settings{% endblock %}
 {% block main %}
 <main class="container" role="main">
+        {% if calendar %}
   <h1>Current shares for {{ current_role().calendar.name }}</h1>
     {% if shares %}
     {% for share in shares %}
@@ -32,6 +33,11 @@
     {% endfor %}
     {% else %}
     Shares are not available
+    {% endif %}
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        Looks like you don't have any calendar selected. Select the one from the menu above or create a new one
+    </div>
     {% endif %}
 </main>
 {% endblock %}

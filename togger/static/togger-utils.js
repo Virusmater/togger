@@ -71,7 +71,7 @@ function changeShare(form, url) {
 function signMyself(firstName, lastName) {
         document.getElementById("newName").value = firstName + " " + lastName
         }
-
+if (!isMobile()){
 $(document).on('shown.bs.modal', function (e) {
     $('[autofocus]', e.target).focus();
-});
+});}

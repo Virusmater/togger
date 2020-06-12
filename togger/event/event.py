@@ -10,7 +10,7 @@ from togger import application
 from togger.event import event_api
 from togger.event.models import Event
 
-bp = Blueprint("event", __name__)
+bp = Blueprint("event", __name__, template_folder="templates")
 login_manager = LoginManager()
 
 

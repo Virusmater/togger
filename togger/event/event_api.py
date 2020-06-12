@@ -57,11 +57,14 @@ def save_shift(event_id, new_person_name, shift_ids_to_remove=[]):
 
 
 def get_report(start, end, calendar_name="default"):
-    calendar_id = calendar_api.get_current_calendar().id
-    report = db.session.query(Shift.person, func.count(Shift.person).label('total')) \
-        .join(Event.shifts) \
-        .filter(Event.calendar_id == calendar_id) \
-        .filter(Event.start <= end)\
-        .filter(Event.end >= start) \
-        .group_by(Shift.person).all()
-    return report
+    if calendar_api.get_current_calendar():
+        calendar_id = calendar_api.get_current_calendar().id
+        report = db.session.query(Shift.person, func.count(Shift.person).label('total')) \
+            .join(Event.shifts) \
+            .filter(Event.calendar_id == calendar_id) \
+            .filter(Event.start <= end)\
+            .filter(Event.end >= start) \
+            .group_by(Shift.person).all()
+        return report
+    else:
+        return None

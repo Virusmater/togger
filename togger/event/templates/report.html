@@ -3,6 +3,7 @@
 {% block main %}
 
 <main class="container" role="main">
+    {% if current_role() %}
     <h1>Shift report for {{ current_role().calendar.name }}</h1>
     <form action="/report" method="get">
         <div class="form-row mb-2">
@@ -42,6 +43,11 @@
         weekStart: 1
     });
     </script>
+        {% else %}
+    <div class="alert alert-warning" role="alert">
+        Looks like you don't have any calendar selected. Select the one from the menu above or create a new one
+    </div>
+    {% endif %}
 </main>
 
 {% endblock %}

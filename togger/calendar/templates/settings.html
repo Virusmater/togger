@@ -1,34 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Settings{% endblock %}
 {% block main %}
-<main role="main" class="container">
-    <h1>Current settings for {{ current_role().calendar.name }}</h1>
-<form action="/post_settings" method="post">
-  <div class="form-group">
-    <label for="scrollTime">scrollTime</label>
-    <input type="text" class="form-control" name="scrollTime" id="scrollTime" placeholder="16:00:00" value="{{ settings.scrollTime }}">
-  </div>
-  <div class="form-group">
-    <label for="firstDay">firstDay</label>
-    <input type="text" class="form-control" name="firstDay" id="firstDay" placeholder="1" value="{{ settings.firstDay }}">
-  </div>
-  <div class="form-group">
-    <label for="slotMinTime">slotMinTime</label>
-    <input type="text" class="form-control" name="slotMinTime" id="slotMinTime" placeholder="09:00:00" value="{{ settings.slotMinTime }}">
-  </div>
-  <div class="form-group">
-    <label for="firstDay">slotMaxTime</label>
-    <input type="text" class="form-control" name="slotMaxTime" id="slotMaxTime" placeholder="29:00:00" value="{{ settings.slotMaxTime }}">
-  </div>
-  <div class="form-group">
-    <label for="firstDay">nextDayThreshold</label>
-    <input type="text" class="form-control" name="nextDayThreshold" id="nextDayThreshold" placeholder="09:00:00" value="{{ settings.nextDayThreshold }}">
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-          <button class="btn btn-danger float-right"
+<main class="container" role="main">
+    {% if calendar %}
+    {% with settings=calendar.get_settings() %}
+    <h1>Current settings for {{ calendar.name }}</h1>
+    <form action="/post_settings" method="post">
+        <div class="form-group">
+            <label for="scrollTime">scrollTime</label>
+            <input class="form-control" id="scrollTime" name="scrollTime" placeholder="16:00:00" type="text"
+                   value="{{ settings.scrollTime }}">
+        </div>
+        <div class="form-group">
+            <label for="firstDay">firstDay</label>
+            <input class="form-control" id="firstDay" name="firstDay" placeholder="1" type="text"
+                   value="{{ settings.firstDay }}">
+        </div>
+        <div class="form-group">
+            <label for="slotMinTime">slotMinTime</label>
+            <input class="form-control" id="slotMinTime" name="slotMinTime" placeholder="09:00:00" type="text"
+                   value="{{ settings.slotMinTime }}">
+        </div>
+        <div class="form-group">
+            <label for="firstDay">slotMaxTime</label>
+            <input class="form-control" id="slotMaxTime" name="slotMaxTime" placeholder="29:00:00" type="text"
+                   value="{{ settings.slotMaxTime }}">
+        </div>
+        <div class="form-group">
+            <label for="firstDay">nextDayThreshold</label>
+            <input class="form-control" id="nextDayThreshold" name="nextDayThreshold" placeholder="09:00:00" type="text"
+                   value="{{ settings.nextDayThreshold }}">
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+        <button class="btn btn-danger float-right"
                 onclick="renderModal('/render_delete')" type="button">
             Delete calendar
         </button>
-</form>
+    </form>
+    {% endwith %}
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        Looks like you don't have any calendar selected. Select the one from the menu above or create a new one
+    </div>
+    {% endif %}
 </main>
 {% endblock %}
