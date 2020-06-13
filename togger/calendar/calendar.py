@@ -1,10 +1,8 @@
 import flask_login
-from flask import Blueprint, render_template, request, jsonify, url_for
+from flask import Blueprint, render_template
 from flask_login import login_manager, LoginManager
-from werkzeug.utils import redirect
 
 from togger import application
-from togger.auth import auth_api
 from togger.calendar import calendar_dao
 
 bp = Blueprint("calendar", __name__, template_folder="templates")

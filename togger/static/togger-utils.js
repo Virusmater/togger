@@ -1,4 +1,6 @@
 function submit_modal(form, modal, url, method) {
+    if(typeof method === "undefined")
+        {method = 'POST';}
     var request = new XMLHttpRequest();
     formData = new FormData(form);
     request.onload = function() {

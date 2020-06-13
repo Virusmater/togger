@@ -1,10 +1,11 @@
 import flask_login
 from flask import Blueprint, request, url_for, jsonify
 from werkzeug.utils import redirect
-from togger.auth import auth_api
+
+from togger.auth import auth_dao
 from togger.calendar import calendar_dao
 
-bp = Blueprint("calendar_api",  __name__, url_prefix="/api/v1/calendars")
+bp = Blueprint("calendar_api", __name__, url_prefix="/api/v1/calendars")
 
 
 @bp.route('/', methods=['POST'])
@@ -26,7 +27,7 @@ def delete_calendar():
 
 @bp.route('/share', methods=['POST'])
 @flask_login.login_required
-@auth_api.can_edit_events
+@auth_dao.can_edit_events
 def post_share():
     role_name = request.form['roleName']
     share = calendar_dao.share_calendar(role_name)
@@ -39,7 +40,7 @@ def post_share():
 
 @bp.route('/share', methods=['PUT'])
 @flask_login.login_required
-@auth_api.can_edit_events
+@auth_dao.can_edit_events
 def change_share():
     user_id = request.form['userId']
     role_name = request.form['roleName']

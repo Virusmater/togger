@@ -3,13 +3,11 @@ from distutils.util import strtobool
 import flask_login
 from dateutil import parser
 from dateutil.tz import UTC
-from flask import Blueprint, request, url_for, jsonify
-from werkzeug.utils import redirect
-from togger.auth import auth_api
-from togger.calendar import calendar_dao
+from flask import Blueprint, request, jsonify
+
 from togger.event import event_dao
 
-bp = Blueprint("event_api",  __name__, url_prefix="/api/v1/calendars/events")
+bp = Blueprint("event_api", __name__, url_prefix="/api/v1/calendars/events")
 
 
 @bp.route('/', methods=['GET'])

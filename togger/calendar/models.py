@@ -1,13 +1,12 @@
-import os
 import uuid
 from datetime import timedelta, date, datetime
 from json import loads
 
+from itsdangerous import URLSafeSerializer
 from sqlalchemy import JSON
+
 from togger import db
 from togger.database import GUID
-from itsdangerous import URLSafeSerializer
-
 
 default_settings = "{\"firstDay\": \"1\"," \
                    " \"nextDayThreshold\": \"00:00:00\"," \
@@ -33,15 +32,15 @@ def _gen_valid_until():
 
 
 class Share:
-    auth_s = URLSafeSerializer(os.environ.get("SECRET_KEY"), "share")
+    auth_s = URLSafeSerializer(db.app.config['SECRET_KEY'], "share")
 
-    def __init__(self, role_name=None, calendar_id=None, valid_until=_gen_valid_until(), token=None):
+    def __init__(self, role_name=None, calendar_id=None, token=None):
         if token:
             self._load_token(token=token)
         else:
             self.role_name = role_name
             self.calendar_id = calendar_id
-            self.valid_until = valid_until
+            self.valid_until = _gen_valid_until()
 
     def generate_token(self):
         return self.auth_s.dumps(

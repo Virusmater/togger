@@ -1,8 +1,8 @@
 import flask_login
-from flask import Blueprint, request, redirect, url_for, render_template, flash, session
+from flask import Blueprint, request, redirect, url_for, render_template, flash
 from flask_login import LoginManager, login_required, logout_user
-from . import auth_api
-from .auth_api import get_user, add_user, get_user_by_id
+
+from . import auth_dao
 
 bp = Blueprint("auth", __name__, url_prefix="/auth", template_folder="templates")
 login_manager = LoginManager()
@@ -16,7 +16,7 @@ def login():
         else:
             return render_template('login.html', query_string=request.query_string.decode('utf-8'))
     email = request.form['email']
-    user = get_user(email)
+    user = auth_dao.get_user(email)
     if user and user.check_password(request.form['password']):
         flask_login.login_user(user)
         return redirect(url_for('main', **request.args))
@@ -32,14 +32,21 @@ def register():
         else:
             return render_template('register.html', query_string=request.query_string.decode('utf-8'))
     email = request.form['email']
-    if get_user(email) is None:
+    if auth_dao.get_user(email) is None:
         first_name = request.form['firstName']
         last_name = request.form['lastName']
-        user = add_user(username=email, password=request.form['password'], first_name=first_name, last_name=last_name)
+        user = auth_dao.add_user(username=email, password=request.form['password'], first_name=first_name,
+                                 last_name=last_name)
         flask_login.login_user(user, remember=True)
         return redirect(url_for('main', **request.args))
     flash('Such user already exists')
     return redirect(url_for('auth.register', **request.args))
+
+
+@bp.route('/verify/<token>', methods=['GET'])
+def verify(token):
+    auth_dao.confirm_verify_email(token)
+    return redirect(url_for('main'))
 
 
 @bp.route("/logout")
@@ -55,16 +62,15 @@ def render_profile():
     return render_template('profile.html')
 
 
-@bp.route("/users", methods=['PUT', 'POST'])
+@bp.route("/render_verify", methods=['GET'])
 @login_required
-def update_user():
-    auth_api.update_user(first_name=request.form['firstName'], last_name=request.form['lastName'])
-    return '', 204
+def verify_reminder():
+    return render_template('verify_modal.html')
 
 
 @login_manager.user_loader
 def user_loader(id):
-    return get_user_by_id(id)
+    return auth_dao.get_user_by_id(id)
 
 
 @login_manager.unauthorized_handler

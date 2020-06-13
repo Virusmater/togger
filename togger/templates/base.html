@@ -85,9 +85,10 @@
                 &#x1F464; {{ current_user.username }}
             </button>
             <div class="dropdown-menu dropdown-menu-right">
+                {% if current_role().can_edit_events %}
                 <a class="dropdown-item" href="/settings">Settings</a>
+                {% endif %}
                 <a class="dropdown-item" href="/auth/profile">Profile</a>
-                <button class="dropdown-item" onclick="renderModal('/render_password')" type="button">Password</button>
                 <div class="dropdown-divider"></div>
                 <button class="dropdown-item" onclick="location.href='/auth/logout';" type="button">Logout</button>
             </div>

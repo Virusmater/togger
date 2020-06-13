@@ -23,9 +23,18 @@
     {% else %}
     <div class="container">
         <div class="alert alert-warning" role="alert">
-    Looks like you don't have any calendar selected. Select the one from the menu above or create a new one
-</div>
+            Looks like you don't have any calendar selected. Select the one from the menu above or create a new one
+        </div>
     </div>
     {% endif %}
 </main>
+{% if not current_user.is_verified %}
+<script type="text/javascript">
+    renderModal('/auth/render_verify');
+    $(window).on('load',function(){
+        $('#modal').modal('show');
+    });
+
+</script>
+{% endif %}
 {% endblock %}

@@ -1,17 +1,15 @@
-from datetime import datetime
-
 import flask_login
-from flask.json import dumps, loads
+from flask.json import dumps
 
 from togger import db
+from togger.auth import auth_dao
 from togger.auth.models import Role
-from togger.auth import auth_api
 from togger.calendar.models import Share, Calendar
 
 ROLES = ["user", "manager"]
 
 
-@auth_api.can_edit_events
+@auth_dao.can_edit_events
 def save_settings(settings):
     calendar = get_current_calendar()
     calendar.settings = dumps(settings)
@@ -20,7 +18,7 @@ def save_settings(settings):
     return True
 
 
-@auth_api.can_edit_events
+@auth_dao.can_edit_events
 def share_calendar(role_name):
     if role_name in ROLES:
         share = Share(role_name=role_name, calendar_id=get_current_calendar().id)
@@ -28,14 +26,14 @@ def share_calendar(role_name):
     return None
 
 
-@auth_api.can_edit_events
+@auth_dao.can_edit_events
 def get_shares():
     calendar = get_current_calendar()
     roles = Role.query.filter(Role.calendar_id == calendar.id).all()
     return roles
 
 
-@auth_api.can_edit_events
+@auth_dao.can_edit_events
 def change_share(user_id, role_name):
     calendar = get_current_calendar()
     role = Role.query.filter(Role.calendar_id == calendar.id).filter(Role.user_id == user_id).first()
@@ -91,7 +89,7 @@ def create(calendar_name):
     return calendar
 
 
-@auth_api.can_edit_events
+@auth_dao.can_edit_events
 def delete():
     db.session.delete(get_current_calendar())
     db.session.commit()

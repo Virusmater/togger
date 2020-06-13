@@ -4,7 +4,7 @@ from sqlalchemy import func
 from togger import db
 from togger.calendar import calendar_dao
 from .models import Shift, Event
-from ..auth import auth_api
+from ..auth import auth_dao
 
 
 def get_events(start, end):
@@ -14,7 +14,7 @@ def get_events(start, end):
     return events
 
 
-@auth_api.can_edit_events
+@auth_dao.can_edit_events
 def save_event(title, description, start, end, all_day=False, event_id=None, recurrent=False, calendar_name='default'):
     dates = [(start, end)]
     calendar_id = calendar_dao.get_current_calendar().id
@@ -29,7 +29,7 @@ def save_event(title, description, start, end, all_day=False, event_id=None, rec
     db.session.commit()
 
 
-@auth_api.can_edit_events
+@auth_dao.can_edit_events
 def remove_event(event_id):
     calendar_id = calendar_dao.get_current_calendar().id
     event = Event.query.filter(Event.id == event_id).filter(Event.calendar_id == calendar_id).first()
