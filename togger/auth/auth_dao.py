@@ -11,22 +11,18 @@ from togger.auth.models import User, Role
 from togger.calendar.models import Calendar
 
 
-def get_users():
-    return User.query.all()
-
-
-# TODO: fix me in case of big users table
 def get_user(username):
     if username is None:
         return
-    return next((item for item in get_users() if item.username == username), None)
+    user = User.query.filter(User.username == username).first()
+    return user
 
 
-# TODO: fix me in case of big users table
 def get_user_by_id(id):
     if id is None:
         return
-    return next((item for item in get_users() if str(item.id) == id), None)
+    user = User.query.filter(User.id == id).first()
+    return user
 
 
 def add_user(username, password, first_name, last_name):
@@ -80,7 +76,8 @@ def confirm_verify_email(token):
         db.session.merge(user)
         db.session.commit()
         flash('Your email has been verified. Please login.')
-    flash('Verification link got expired. Please request a new one.')
+    else:
+        flash('Verification link got expired. Please request a new one.')
 
 
 def change_password(old_password, new_password):
