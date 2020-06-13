@@ -23,9 +23,7 @@ def save_settings(settings):
 @auth_api.can_edit_events
 def share_calendar(role_name):
     if role_name in ROLES:
-        share = Share(calendar=get_current_calendar(), role_name=role_name)
-        db.session.add(share)
-        db.session.commit()
+        share = Share(role_name=role_name, calendar_id=get_current_calendar().id)
         return share
     return None
 
@@ -50,13 +48,14 @@ def change_share(user_id, role_name):
     return role
 
 
-def accept_share(share_id):
-    share = Share.query.filter(Share.id == share_id).first()
+def accept_share(share_token):
+    share = Share(token=share_token)
     user = flask_login.current_user
     for role in user.roles:
+        print(type(role.calendar_id))
         if role.calendar_id == share.calendar_id:
             return
-    if datetime.now() < share.valid_until:
+    if share.is_valid():
         for role in user.roles:
             role.is_default = False
         role = Role(type=share.role_name, calendar_id=share.calendar_id, is_default=True)

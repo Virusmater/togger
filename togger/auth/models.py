@@ -32,8 +32,7 @@ class Role(db.Model):
     user_id = db.Column(GUID(), db.ForeignKey('user.id'), nullable=False)
     user = db.relationship("User")
     is_default = db.Column(db.Boolean, default=False, nullable=False)
-
-    UniqueConstraint('calendar_id', 'user_id', name='role_cal_user_key')
+    UniqueConstraint(calendar_id, user_id, name='role_cal_user_key')
 
     @property
     def can_edit_events(self):

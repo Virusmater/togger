@@ -43,7 +43,8 @@
             <li class="nav-item dropdown active">
                 <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
                    href="#"
-                   id="dropdown01">&#x1F4C5; Calendar: {{ current_role().calendar.name if current_role() else None  }}</a>
+                   id="dropdown01">&#x1F4C5; Calendar: {{ current_role().calendar.name if current_role() else None
+                    }}</a>
                 <div aria-labelledby="dropdown01" class="dropdown-menu">
                     <form action="/set_default" method="post">
                         {% for role in roles() %}
@@ -80,7 +81,7 @@
             <button aria-expanded="false" aria-haspopup="true" class="btn btn-secondary dropdown-toggle"
                     data-toggle="dropdown"
                     type="button">
-                     &#x1F464; {{ current_user.username }}
+                &#x1F464; {{ current_user.username }}
             </button>
             <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" href="/settings">Settings</a>

@@ -64,7 +64,7 @@ def post_share():
     role_name = request.form['roleName']
     share = calendar_api.share_calendar(role_name)
     if share:
-        url = request.host_url + "?share=" + str(share.id)
+        url = request.host_url + "?share=" + share.generate_token()
     else:
         url = ""
     return url
