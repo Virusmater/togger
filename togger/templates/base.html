@@ -46,7 +46,7 @@
                    id="dropdown01">&#x1F4C5; Calendar: {{ current_role().calendar.name if current_role() else None
                     }}</a>
                 <div aria-labelledby="dropdown01" class="dropdown-menu">
-                    <form action="/set_default" method="post">
+                    <form action="/api/v1/calendars/default" method="post">
                         {% for role in roles() %}
                         {% if role.is_default %}
                         <button class="dropdown-item active show" name="calendarId" type="submit"
@@ -77,6 +77,7 @@
             &#x1F517; Share
         </button>
         {% endif %}
+
         <div class="btn-group">
             <button aria-expanded="false" aria-haspopup="true" class="btn btn-secondary dropdown-toggle"
                     data-toggle="dropdown"
@@ -101,7 +102,5 @@
         </div>
     </div>
 </div>
-
-
 </body>
 </html>

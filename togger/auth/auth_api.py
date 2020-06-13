@@ -1,3 +1,5 @@
+from functools import wraps
+
 import flask_login
 from flask import flash
 from togger import db
@@ -69,11 +71,12 @@ def get_role():
 
 
 def can_edit_events(func):
+    @wraps(func)
     def func_wrapper(*args, **kwargs):
         role = get_role()
         if role and role.can_edit_events:
             return func(*args, **kwargs)
         else:
-            return None
+            return '', 401
     return func_wrapper
 

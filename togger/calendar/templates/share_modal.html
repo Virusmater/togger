@@ -18,7 +18,7 @@
         <div class="input-group">
             <input class="form-control" id="shareUrl" name="url" type="text" placeholder="Select the permission first >" readonly>
               <div class="input-group-append ">
-              <select autofocus onchange="newShare(modalForm, modal, '/post_share')" class="custom-select" name="roleName" id="roleName" aria-label="Example select with button addon">
+              <select autofocus onchange="newShare(modalForm, modal, '/api/v1/calendars/share')" class="custom-select" name="roleName" id="roleName" aria-label="Example select with button addon">
                 <option value="" selected>...</option>
                 <option value="user">View</option>
                 <option value="manager">Edit</option>

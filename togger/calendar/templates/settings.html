@@ -5,7 +5,7 @@
     {% if calendar %}
     {% with settings=calendar.get_settings() %}
     <h1>Current settings for {{ calendar.name }}</h1>
-    <form action="/post_settings" method="post">
+    <form action="/api/v1/calendars/settings" method="post">
         <div class="form-group">
             <label for="scrollTime">scrollTime</label>
             <input class="form-control" id="scrollTime" name="scrollTime" placeholder="16:00:00" type="text"

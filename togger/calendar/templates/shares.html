@@ -14,7 +14,7 @@
         readonly type="text">
         <div class="input-group-append ">
             <select name="roleName" id="roleName"  autofocus class="custom-select"
-                    onchange="changeShare(RoleForm{{ loop.index0 }}, '/change_share')">
+                    onchange="changeShare(RoleForm{{ loop.index0 }}, '/api/v1/calendars/share')">
                 <option value="">Remove</option>
                 {% if share.type == 'user' %}
                 <option selected value="user">View</option>

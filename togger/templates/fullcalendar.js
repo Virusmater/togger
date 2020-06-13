@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('eventTitle', info.event.title)
         formData.append('eventId', info.event.id)
         formData.append('allDay', info.event.allDay)
+        formData.append('eventDescription', info.event.extendedProps.description)
         // Set up our request
-        request.open('POST', '/post_event');
+        request.open('POST', '{{ url_for("event_api.post_event") }}');
 
         // Send our FormData object; HTTP headers are set automatically
         request.send(formData);
@@ -114,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
         selectable: false,
         nowIndicator: true,
         dayMaxEvents: true, // allow "more" link when too many events
-        events: '/get_events',
+        events: "{{ url_for('event_api.get_events') }}",
         eventColor: '#9F9C99'
     });
 //    loadSettings()

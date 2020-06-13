@@ -1,98 +1,70 @@
-from datetime import datetime
-
 import flask_login
-from flask.json import dumps, loads
-
-from togger import db
-from togger.auth.models import Role
+from flask import Blueprint, request, url_for, jsonify
+from werkzeug.utils import redirect
 from togger.auth import auth_api
-from togger.calendar.models import Share, Calendar
+from togger.calendar import calendar_dao
 
-ROLES = ["user", "manager"]
+bp = Blueprint("calendar_api",  __name__, url_prefix="/api/v1/calendars")
 
 
+@bp.route('/', methods=['POST'])
+@flask_login.login_required
+def post_calendars():
+    if '_method' not in request.form:
+        calendar_dao.create(request.form['calendarName'])
+        return redirect(url_for('main'))
+    elif request.form['_method'] == "DELETE":
+        return delete_calendar()
+
+
+@bp.route('/', methods=['DELETE'])
+@flask_login.login_required
+def delete_calendar():
+    calendar_dao.delete()
+    return redirect(url_for('main'))
+
+
+@bp.route('/share', methods=['POST'])
+@flask_login.login_required
 @auth_api.can_edit_events
-def save_settings(settings):
-    calendar = get_current_calendar()
-    calendar.settings = dumps(settings)
-    db.session.merge(calendar)
-    db.session.commit()
-    return True
-
-
-@auth_api.can_edit_events
-def share_calendar(role_name):
-    if role_name in ROLES:
-        share = Share(role_name=role_name, calendar_id=get_current_calendar().id)
-        return share
-    return None
-
-
-@auth_api.can_edit_events
-def get_shares():
-    calendar = get_current_calendar()
-    roles = Role.query.filter(Role.calendar_id == calendar.id).all()
-    return roles
-
-
-@auth_api.can_edit_events
-def change_share(user_id, role_name):
-    calendar = get_current_calendar()
-    role = Role.query.filter(Role.calendar_id == calendar.id).filter(Role.user_id == user_id).first()
-    if role_name in ROLES:
-        role.type = role_name
-        db.session.merge(role)
+def post_share():
+    role_name = request.form['roleName']
+    share = calendar_dao.share_calendar(role_name)
+    if share:
+        url = request.host_url + "?share=" + share.generate_token()
     else:
-        db.session.delete(role)
-    db.session.commit()
-    return role
+        url = ""
+    return url
 
 
-def accept_share(share_token):
-    share = Share(token=share_token)
-    user = flask_login.current_user
-    for role in user.roles:
-        print(type(role.calendar_id))
-        if role.calendar_id == share.calendar_id:
-            return
-    if share.is_valid():
-        for role in user.roles:
-            role.is_default = False
-        role = Role(type=share.role_name, calendar_id=share.calendar_id, is_default=True)
-        flask_login.current_user.roles.append(role)
-        db.session.merge(flask_login.current_user)
-        db.session.commit()
-
-
-def get_current_calendar():
-    for role in flask_login.current_user.roles:
-        if role.is_default:
-            return role.calendar
-    else:
-        return None
-    return role.calendar
-
-
-def set_default(calendar_id):
-    for role in flask_login.current_user.roles:
-        role.is_default = str(role.calendar_id) == calendar_id
-        db.session.merge(role)
-    db.session.commit()
-
-
-def create(calendar_name):
-    user = flask_login.current_user
-    calendar = Calendar(name=calendar_name)
-    for role in user.roles:
-        role.is_default = False
-    role = Role(type="manager", calendar=calendar, is_default=True)
-    user.roles.append(role)
-    db.session.merge(user)
-    db.session.commit()
-    return calendar
-
-
+@bp.route('/share', methods=['PUT'])
+@flask_login.login_required
 @auth_api.can_edit_events
-def delete():
-    db.session.delete(get_current_calendar())
-    db.session.commit()
+def change_share():
+    user_id = request.form['userId']
+    role_name = request.form['roleName']
+    calendar_dao.change_share(user_id, role_name)
+    return '', 204
+
+
+@bp.route('/settings', methods=['POST'])
+@flask_login.login_required
+def post_settings():
+    settings = {'scrollTime': request.form['scrollTime'], 'firstDay': request.form['firstDay'],
+                'slotMinTime': request.form['slotMinTime'], 'slotMaxTime': request.form['slotMaxTime'],
+                'nextDayThreshold': request.form['nextDayThreshold']}
+    calendar_dao.save_settings(settings)
+    return '', 204
+
+
+@bp.route('/settings', methods=['GET'])
+@flask_login.login_required
+def get_settings():
+    return jsonify(calendar_dao.get_settings())
+
+
+@bp.route('/default', methods=['POST'])
+@flask_login.login_required
+def set_default():
+    calendar_dao.set_default(request.form['calendarId'])
+    return redirect(request.referrer)

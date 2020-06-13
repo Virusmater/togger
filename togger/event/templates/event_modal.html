@@ -28,11 +28,10 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary order-3" form="modalForm" type="submit"
-                        onclick="submit_modal(modalForm, modal, '/post_event')">Save changes</button>
-                <button class="btn btn-danger mr-auto order-1" form="modalForm" onclick="submit_modal(modalForm, modal, '/remove_event')"
-                type="submit">
+                        onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_event') }}')">Save changes</button>
+                <button class="btn btn-danger mr-auto order-1" form="modalForm"
+                        onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.delete_event') }}', 'DELETE')" type="submit">
                 Delete
                 </button>
                 <button class="btn btn-secondary order-2" data-dismiss="modal" type="button">Close</button>
-
             </div>

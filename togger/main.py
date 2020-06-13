@@ -3,12 +3,15 @@ from flask import request, render_template, redirect, url_for
 
 from togger import application
 from togger.auth import auth_api
-from togger.calendar import calendar_api, calendar
-from togger.event import event
+from togger.calendar import calendar_dao, calendar, calendar_api
+from togger.event import event, event_api
 from .auth import auth
 
+
 application.register_blueprint(event.bp)
+application.register_blueprint(event_api.bp)
 application.register_blueprint(calendar.bp)
+application.register_blueprint(calendar_api.bp)
 application.register_blueprint(auth.bp)
 
 
@@ -16,9 +19,9 @@ application.register_blueprint(auth.bp)
 @flask_login.login_required
 def main():
     if request.args.get('share'):
-        calendar_api.accept_share(request.args.get('share'))
+        calendar_dao.accept_share(request.args.get('share'))
         return redirect(url_for('main'))
-    return render_template('main.html', calendar=calendar_api.get_current_calendar(), current_user=flask_login.current_user)
+    return render_template('main.html', calendar=calendar_dao.get_current_calendar(), current_user=flask_login.current_user)
 
 
 @application.route('/render_password', methods=['GET'])

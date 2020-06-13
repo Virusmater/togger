@@ -38,7 +38,7 @@
 </div>
 <div class="modal-footer">
     <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-    <button class="btn btn-primary" form="modalForm" onclick="submit_modal(modalForm, modal, '/post_shifts')"
+    <button class="btn btn-primary" form="modalForm" onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_shift') }}')"
             type="submit">Save changes
     </button>
 </div>
