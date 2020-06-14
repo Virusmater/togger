@@ -2,7 +2,7 @@ import uuid
 from datetime import timedelta, date, datetime
 from json import loads
 
-from itsdangerous import URLSafeSerializer
+from itsdangerous import URLSafeSerializer, BadSignature
 from sqlalchemy import JSON
 
 from togger import db
@@ -47,10 +47,13 @@ class Share:
             {"role_name": self.role_name, "calendar_id": str(self.calendar_id), "valid_until": self.valid_until.strftime('%d-%m-%Y')})
 
     def _load_token(self, token):
-        data = self.auth_s.loads(token)
-        self.role_name = data["role_name"]
-        self.calendar_id = uuid.UUID(data["calendar_id"])
-        self.valid_until = datetime.strptime(data["valid_until"], '%d-%m-%Y')
+        try:
+            data = self.auth_s.loads(token)
+            self.role_name = data["role_name"]
+            self.calendar_id = uuid.UUID(data["calendar_id"])
+            self.valid_until = datetime.strptime(data["valid_until"], '%d-%m-%Y')
+        except BadSignature:
+            return False
 
     def is_valid(self):
-        return datetime.now() < self.valid_until
+        return self.valid_until and datetime.now() < self.valid_until

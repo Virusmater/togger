@@ -43,6 +43,33 @@ def register():
     return redirect(url_for('auth.register', **request.args))
 
 
+@bp.route('/forgot', methods=['GET'])
+def render_forgot():
+    return render_template('forgot.html')
+
+
+@bp.route('/forgot', methods=['POST'])
+def post_forgot():
+    email = request.form['email']
+    auth_dao.password_email(email)
+    flash('The email with the restoration link has been sent. Check your inbox.', "info")
+    return render_template('login.html')
+
+
+@bp.route('/restore/<token>', methods=['GET'])
+def render_restore(token):
+    return render_template('restore.html', token=token)
+
+
+@bp.route('/restore/<token>', methods=['POST'])
+def restore(token):
+    new_password = request.form['password']
+    if auth_dao.restore_password(token=token, new_password=new_password):
+        return redirect(url_for('main'))
+    else:
+        return redirect(url_for('auth.render_forgot'))
+
+
 @bp.route('/verify/<token>', methods=['GET'])
 def verify(token):
     auth_dao.confirm_verify_email(token)

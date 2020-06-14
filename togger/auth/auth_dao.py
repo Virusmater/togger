@@ -50,16 +50,44 @@ def update_user(first_name, last_name):
 def verify_email(user):
     token = user.generate_validate_token()
     url = current_app.config['APP_URL'] + "/auth/verify/" + token
-    thread = Thread(target=send_verify_email,
-                    args=(user.username, url, current_app.config,))
+    subject = "[Togger] Welcome to Togger. Verify your email"
+    prepare_email(user.username, subject, url)
+
+
+def restore_password(token, new_password):
+    user = User()
+    if user.check_password_token(token):
+        user = get_user(user.username)
+        user.set_password(new_password)
+        db.session.merge(user)
+        db.session.commit()
+        flask_login.login_user(user, remember=True)
+        return True
+    else:
+        flash("Restoration link got expired. Please request a new one.", 'error')
+        return False
+
+
+def password_email(username):
+    user = get_user(username)
+    if user and user.is_verified:
+        token = user.generate_password_token()
+        url = current_app.config['APP_URL'] + "/auth/restore/" + token
+        subject = "[Togger] Forgot your password? The restoration link is inside"
+        prepare_email(user.username, subject, url)
+
+
+def prepare_email(address, subject, content):
+    thread = Thread(target=send_email,
+                    args=(address, subject, content, current_app.config,))
     thread.daemon = True
     thread.start()
 
 
-def send_verify_email(username, url, config):
+def send_email(username, subject, content, config):
     msg = EmailMessage()
-    msg.set_content(url)
-    msg['Subject'] = "[Togger] Welcome to Togger. Verify your email"
+    msg.set_content(content)
+    msg['Subject'] = subject
     msg['From'] = config['SMTP_MAILBOX']
     msg['To'] = username
     s = smtplib.SMTP(config['SMTP_SERVER'], config['SMTP_PORT'])
@@ -75,7 +103,6 @@ def confirm_verify_email(token):
         user.is_verified = True
         db.session.merge(user)
         db.session.commit()
-        flash('Your email has been verified. Please login.')
     else:
         flash('Verification link got expired. Please request a new one.')
 
