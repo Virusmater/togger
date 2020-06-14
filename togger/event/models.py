@@ -5,19 +5,20 @@ from togger.database import GUID
 
 class Event(db.Model):
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
-    title = db.Column(db.String(80), nullable=False)
+    title = db.Column(db.String(256), nullable=False)
+    description = db.Column(db.Text, nullable=False)
     start = db.Column(db.DateTime, nullable=False)
     end = db.Column(db.DateTime, nullable=False)
     all_day = db.Column(db.Boolean, default=False, nullable=False)
     shifts = db.relationship('Shift', backref='Event', cascade="all,delete", lazy=True)
     calendar_id = db.Column(GUID(), db.ForeignKey('calendar.id'), nullable=False)
 
-
     @property
     def serialized(self):
         return {
             'id': self.id,
             'title': self.title,
+            'description': self.description,
             'start': self.start.isoformat() + 'Z',
             'end': self.end.isoformat() + 'Z',
             'color': self.get_color(),

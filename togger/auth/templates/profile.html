@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block main %}
+<main role="main" class="container">
+    <h1>Profile for {{ current_user.username }}</h1>
+<form action="{{ url_for('auth_api.update_user') }}" method="post">
+  <div class="form-group">
+    <label for="firstName">First name</label>
+    <input type="text" class="form-control" name="firstName" id="firstName" placeholder="16:00:00"
+           value="{{ current_user.first_name }}">
+  </div>
+  <div class="form-group">
+    <label for="lastName">Last name</label>
+    <input type="text" class="form-control" name="lastName" id="lastName" placeholder="1"
+           value="{{ current_user.last_name }}">
+  </div>
+  <button type="submit" class="btn btn-primary">Save</button>
+  <button class="btn btn-danger float-right" onclick="renderModal('/render_password')" type="button">Chage password
+  </button>
+</form>
+</main>
+{% endblock %}

@@ -1,5 +1,5 @@
             <div class="modal-header">
-                <h5 class="modal-title">Edit event</h5>
+                <h5 class="modal-title">Edit or create event</h5>
                 <button aria-label="Close" class="close" data-dismiss="modal" type="button">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -12,10 +12,14 @@
                     <input hidden id="endDateTime" name="endDateTime" readonly type="text" value="{{ event.end }}">
                     <input hidden id="eventId" name="eventId" readonly type="text" value="{{ event.id }}">
                     <div class="form-group">
-
-                        <input class="form-control mt-2" id="eventTitle" name="eventTitle" placeholder="put event name"
-                               type="text" value="{{ event.title }}">
+                        <input class="form-control mt-2" id="eventTitle" maxlength="80" name="eventTitle"
+                               placeholder="event name" type="text" value="{{ event.title }}" required autofocus>
                     </div>
+                    <div class="form-group">
+                        <textarea class="form-control" placeholder="event description" name="eventDescription"
+                                  id="eventDescription" rows="3">{{ event.description if event.description }}</textarea>
+                    </div>
+
                     <div class="form-check">
                         <input class="form-check-input" id="isRecurrent" name="isRecurrent" type="checkbox">
                         <label class="form-check-label" for="isRecurrent">Repeat every week next 5 weeks</label>
@@ -24,11 +28,10 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary order-3" form="modalForm" type="submit"
-                        onclick="submit_modal(modalForm, modal, '/post_event')">Save changes</button>
-                <button class="btn btn-danger mr-auto order-1" form="modalForm" onclick="submit_modal(modalForm, modal, '/remove_event')"
-                type="submit">
+                        onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_event') }}')">Save changes</button>
+                <button class="btn btn-danger mr-auto order-1" form="modalForm"
+                        onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.delete_event') }}', 'DELETE')" type="submit">
                 Delete
                 </button>
                 <button class="btn btn-secondary order-2" data-dismiss="modal" type="button">Close</button>
-
             </div>

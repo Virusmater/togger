@@ -30,7 +30,7 @@
     {% endblock %}
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark ">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark py-1">
     <a class="navbar-brand" href="/">Togger</a>
     <button aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation"
             class="navbar-toggler"
@@ -40,30 +40,57 @@
 
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/settings">Settings</a>
-            </li>
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown active">
                 <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
                    href="#"
-                   id="dropdown01">Calendars</a>
+                   id="dropdown01">&#x1F4C5; Calendar: {{ current_role().calendar.name if current_role() else None
+                    }}</a>
                 <div aria-labelledby="dropdown01" class="dropdown-menu">
-                    <a class="dropdown-item active" href="#">Default</a>
+                    <form action="/api/v1/calendars/default" method="post">
+                        {% for role in roles() %}
+                        {% if role.is_default %}
+                        <button class="dropdown-item active show" name="calendarId" type="submit"
+                                value="{{ role.calendar_id }}">{{ role.calendar.name }}
+                        </button>
+                        {% else %}
+                        <button class="dropdown-item show" name="calendarId" type="submit"
+                                value="{{ role.calendar_id }}">{{ role.calendar.name }}
+                        </button>
+                        {% endif %}
+                        {% endfor %}
+                    </form>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item show" onclick="location.href='/shares';">Shares
+                    </button>
+                    <button class="dropdown-item show" onclick="location.href='/report';">Report
+                    </button>
+                    <button class="dropdown-item show" name="createNewCalendar" onclick="renderModal('/render_new')"
+                            type="submit" value="createNewCalendar">Create new...
+                    </button>
+
                 </div>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/report">Report</a>
-            </li>
         </ul>
+        {% if current_role().can_edit_events %}
+        <button class="btn btn-secondary mr-1"
+                onclick="renderModal('/render_share')" type="button">
+            &#x1F517; Share
+        </button>
+        {% endif %}
 
         <div class="btn-group">
-            <button aria-expanded="false" aria-haspopup="true" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+            <button aria-expanded="false" aria-haspopup="true" class="btn btn-secondary dropdown-toggle"
+                    data-toggle="dropdown"
                     type="button">
-                {{ current_user.username }}
+                &#x1F464; {{ current_user.username }}
             </button>
             <div class="dropdown-menu dropdown-menu-right">
-                <button class="dropdown-item" onclick="renderModal('/render_password')" type="button">Password</button>
-                <button class="dropdown-item" onclick="location.href='auth/logout';" type="button">Logout</button>
+                {% if current_role().can_edit_events %}
+                <a class="dropdown-item" href="/settings">Settings</a>
+                {% endif %}
+                <a class="dropdown-item" href="/auth/profile">Profile</a>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item" onclick="location.href='/auth/logout';" type="button">Logout</button>
             </div>
         </div>
     </div>
@@ -76,7 +103,5 @@
         </div>
     </div>
 </div>
-
-
 </body>
 </html>

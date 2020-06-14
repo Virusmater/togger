@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block main %}
+<main class="container" role="main">
+        {% if calendar %}
+  <h1>Current shares for {{ current_role().calendar.name }}</h1>
+    {% if shares %}
+    {% for share in shares %}
+    <form id="RoleForm{{ loop.index0 }}" onsubmit="return false">
+    <div class="input-group mb-3">
+        <input type="hidden" name="userId" value="{{ share.user.id }}">
+        <input class="form-control" name="userId" value=
+        "{{ share.user.username }} ({{ share.user.first_name }} {{ share.user.last_name }})"
+        readonly type="text">
+        <div class="input-group-append ">
+            <select name="roleName" id="roleName"  autofocus class="custom-select"
+                    onchange="changeShare(RoleForm{{ loop.index0 }}, '/api/v1/calendars/share')">
+                <option value="">Remove</option>
+                {% if share.type == 'user' %}
+                <option selected value="user">View</option>
+                {% else %}
+                <option value="user">View</option>
+                {% endif %}
+                {% if share.type == 'manager' %}
+                <option selected value="manager">Edit</option>
+                {% else %}
+                <option value="manager">Edit</option>
+                {% endif %}
+            </select>
+        </div>
+    </div>
+    </form>
+    {% endfor %}
+    {% else %}
+    Shares are not available
+    {% endif %}
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        Looks like you don't have any calendar selected. Select the one from the menu above or create a new one
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

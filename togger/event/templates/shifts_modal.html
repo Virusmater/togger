@@ -7,7 +7,8 @@
 <div class="modal-body" id="modal-body">
     <form id="modalForm" onsubmit="return false">
         <input id="eventId" name="eventId" type="hidden" value="{{ event.id }}">
-        <ul class="list-group">
+        <textarea class="form-control" rows="3" readonly>{{ event.description }}</textarea>
+        <ul class="list-group mt-1">
             {% for shift in event.shifts %}
             <label class="list-group-item mb-0 " for="ShiftCheckBox{{ shift.id }}">
                 {{ shift.person }}
@@ -19,15 +20,25 @@
                 </li>
             </label>
             {% endfor %}
-            <input class="form-control mt-2" id="newName" name="newNameText" placeholder="Put your or friend's name"
-                   type="text">
+
+
+
 
         </ul>
+                    <div class="input-group mt-1">
+            <input class="form-control " id="newName" name="newNameText" placeholder="Put your or friend's name"
+                   type="text" autofocus>
+                          <div class="input-group-append">
+              <button class="btn btn-success" type="button"
+                      onclick="signMyself('{{ current_user.first_name }}', '{{ current_user.last_name }}')"
+              >I'm in!</button>
+              </div>
+                </div>
     </form>
 </div>
 <div class="modal-footer">
     <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-    <button class="btn btn-primary" form="modalForm" onclick="submit_modal(modalForm, modal, '/post_shifts')"
+    <button class="btn btn-primary" form="modalForm" onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_shift') }}')"
             type="submit">Save changes
     </button>
 </div>
