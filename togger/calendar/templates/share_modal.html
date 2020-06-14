@@ -17,12 +17,18 @@
         <label for="shareUrl">Share URL</label>
         <div class="input-group">
             <input class="form-control" id="shareUrl" name="url" type="text" placeholder="Select the permission first >" readonly>
-              <div class="input-group-append ">
-              <select autofocus onchange="newShare(modalForm, modal, '/api/v1/calendars/share')" class="custom-select" name="roleName" id="roleName" aria-label="Example select with button addon">
-                <option value="" selected>...</option>
-                <option value="user">View</option>
-                <option value="manager">Edit</option>
-              </select>
+              <div class="input-group-append" id="shareGroupRight">
+                  <select autofocus onchange="newShare(modalForm, modal, '/api/v1/calendars/share')"
+                          class="custom-select" name="roleName" id="roleName"
+                          aria-label="Example select with button addon">
+                      <option value="" selected>...</option>
+                      <option value="user">View</option>
+                      <option value="manager">Edit</option>
+                  </select>
+                  <button class="btn btn-success" data-content="Copied!" data-placement="top" data-toggle="popover"
+                          id="buttonCopyShare" onclick="copyText(shareUrl)" style="display: none;" type="button">Copy
+                      link
+                  </button>
               </div>
         </div>
         <small id="shareHelp" class="form-text text-muted">The link will be active next 7 days.</small>  </div>

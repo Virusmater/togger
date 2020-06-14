@@ -59,9 +59,9 @@ function newShare(form, modal, url) {
     formData = new FormData(form);
     request.onload = function() {
         if (this.status >= 200 && this.status < 400) {
-            document
-                .getElementById("shareUrl")
-                .value = this.response
+            document.getElementById('roleName').style.display = "none";
+            document.getElementById('buttonCopyShare').style.display = "initial"
+            document.getElementById("shareUrl").value = this.response;
         }
     };
     request.open('POST', url);
@@ -69,6 +69,13 @@ function newShare(form, modal, url) {
     request.send(formData);
 }
 
+function copyText(inputField) {
+    /* Select the text field */
+    inputField.select();
+    inputField.setSelectionRange(0, 99999); /*For mobile devices*/
+    /* Copy the text inside the text field */
+    document.execCommand("copy");
+}
 
 function changeShare(form, url) {
     var request = new XMLHttpRequest();
@@ -90,3 +97,8 @@ if (
         $('[autofocus]', e.target).focus();
     });
 }
+
+
+$(document).on('shown.bs.modal', function(e) {
+    $('[data-toggle="popover"]').popover()
+});
