@@ -15,7 +15,7 @@
     <input autofocus class="form-control" id="inputPassword" name="password" placeholder="New password" required
            type="password">
     <button class="btn btn-lg btn-primary btn-block my-2" type="submit">Change password</button>
-    <a class="text-decoration-none" href="login?{{ query_string }}">or sign in</a> /
-    <a class="text-decoration-none" href="register?{{ query_string }}">or sign up</a>
+    <a class="text-decoration-none" href="{{ url_for('auth.login') }}">or sign in</a> /
+    <a class="text-decoration-none" href="{{ url_for('auth.register') }}">or sign up</a>
 </form>
 {% endblock %}
