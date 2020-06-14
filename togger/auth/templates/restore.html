@@ -2,15 +2,7 @@
 {% block title %}New password{% endblock %}
 {% block main %}
 <form action='{{ token }}' class="form-signin" method='POST'>
-    <img class="mb-4" height="72" src="{{ url_for('static', filename='logo.png') }}"
-         title="yes, this is a screenshot from logomaster">
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-danger" role="alert">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    {{ super() }}
     <h1 class="h3 mb-3 font-weight-normal">New password</h1>
     <input autofocus class="form-control" id="inputPassword" name="password" placeholder="New password" required
            type="password">

@@ -15,6 +15,17 @@
 </head>
 
 <body class="text-center">
-{% block main %}{% endblock %}
+{% block main %}
+<img class="mb-4" height="72" src="{{ url_for('static', filename='logo.png') }}"
+     title="yes, this is a screenshot from logomaster">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+{% endblock %}
 </body>
 </html>

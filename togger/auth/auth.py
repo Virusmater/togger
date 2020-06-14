@@ -20,7 +20,7 @@ def login():
     if user and user.check_password(request.form['password']):
         flask_login.login_user(user)
         return redirect(url_for('main', **request.args))
-    flash('Incorrect login or/and password. Please check it and try again')
+    flash('Incorrect login or/and password. Please check it and try again', 'danger')
     return redirect(url_for('auth.login', **request.args))
 
 
@@ -39,7 +39,7 @@ def register():
                                  last_name=last_name)
         flask_login.login_user(user, remember=True)
         return redirect(url_for('main', **request.args))
-    flash('Such user already exists')
+    flash('Such user already exists', 'danger')
     return redirect(url_for('auth.register', **request.args))
 
 
@@ -52,7 +52,7 @@ def render_forgot():
 def post_forgot():
     email = request.form['email']
     auth_dao.password_email(email)
-    flash('The email with the restoration link has been sent. Check your inbox.', "info")
+    flash('The email with the restoration link has been sent. Check your inbox.', 'success')
     return render_template('login.html')
 
 
