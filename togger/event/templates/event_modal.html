@@ -6,24 +6,28 @@
             </div>
             <div class="modal-body" id="modal-body">
                 <form id="modalForm" onsubmit="return false">
-                    <input hidden id="allDay" name="allDay" readonly type="text" value="{{ event.all_day }}">
-                    <input hidden id="startDateTime" name="startDateTime" readonly type="text"
+                    <input id="allDay" name="allDay" type="hidden" value="{{ event.all_day }}">
+                    <input id="startDateTime" name="startDateTime" type="hidden"
                            value="{{ event.start }}">
-                    <input hidden id="endDateTime" name="endDateTime" readonly type="text" value="{{ event.end }}">
-                    <input hidden id="eventId" name="eventId" readonly type="text" value="{{ event.id }}">
+                    <input id="endDateTime" name="endDateTime" type="hidden" value="{{ event.end }}">
+                    <input id="timeZone" name="timeZone" type="hidden" value="{{ timezone.zone }}">
+                    <input id="eventId" name="eventId" type="hidden" value="{{ event.id if event.id else '' }}">
+                    {% if event.group_id %}
+                    <input id="groupId" name="groupId" type="hidden" value="{{ event.group_id }}">
+                    {% endif %}
                     <div class="form-group">
-                        <input class="form-control mt-2" id="eventTitle" maxlength="80" name="eventTitle"
+                        <input class="form-control" id="eventTitle" maxlength="80" name="eventTitle"
                                placeholder="event name" type="text" value="{{ event.title }}" required autofocus>
                     </div>
                     <div class="form-group">
                         <textarea class="form-control" placeholder="event description" name="eventDescription"
                                   id="eventDescription" rows="3">{{ event.description if event.description }}</textarea>
                     </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" id="isRecurrent" name="isRecurrent" type="checkbox">
-                        <label class="form-check-label" for="isRecurrent">Repeat every week next 5 weeks</label>
-                    </div>
+                    {% if not event.group_id %}
+                    {% with weekday=get_weekday(event.start, timezone) %}
+                    {% include 'rrule_generator.html' %}
+                    {% endwith %}
+                    {% endif %}
                 </form>
             </div>
             <div class="modal-footer">

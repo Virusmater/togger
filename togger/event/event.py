@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
-from distutils.util import strtobool
 
 import flask_login
+import pytz
 from dateutil import parser
 from dateutil.tz import UTC
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request
 from flask_login import login_manager, LoginManager
+
 from togger import application
 from togger.event import event_dao
 from togger.event.models import Event
@@ -31,26 +32,40 @@ def render_report():
 
 @application.route('/render_shifts', methods=['GET'])
 @flask_login.login_required
-def render_shifts():
+def render_shifts(time_zone=None):
+    if request.args.get('timeZone'):
+        time_zone = request.args.get('timeZone')
     event_id = request.args.get('id')
-    is_editable = bool(strtobool(request.args.get('isEditable')))
-    event = event_dao.get_event(event_id)
-    return render_template('shifts_modal.html', is_editable=is_editable,
-                           event=event)
+    if event_id:
+        event = event_dao.get_event(event_id)
+    else:
+        group_id = request.args.get('groupId')
+        event = event_dao.generate_event(group_id, start=request.args.get('startDateTime'),
+                                         end=request.args.get('endDateTime'))
+    return render_template('shifts_modal.html',
+                           event=event, time_zone=time_zone)
 
 
 @application.route('/render_event', methods=['GET'])
 @flask_login.login_required
-def render_event():
-    if request.args.get('id'):
-        event = event_dao.get_event(request.args.get('id'))
+def render_event(timezone=None):
+    if request.args.get('timeZone'):
+        timezone = pytz.timezone(request.args.get('timeZone'))
+    event_id = request.args.get('id')
+    group_id = request.args.get('groupId')
+
+    if request.args.get('startDateTime'):
+        start = parser.parse(request.args.get('startDateTime'))
+    if request.args.get('endDateTime'):
+        end = parser.parse(request.args.get('endDateTime'))
+
+    if event_id:
+        event = event_dao.get_event(event_id)
+    elif group_id:
+        event = event_dao.generate_event(group_id, start=start, end=end)
     else:
-        event = Event(id="", title="", start=request.args.get('startDateTime'), end=request.args.get('endDateTime'),
-                      all_day=request.args.get('allDay'))
-    return render_template('event_modal.html', event=event)
-
-
-
+        event = Event(id="", title="", start=start, end=end, all_day=request.args.get('allDay'))
+    return render_template('event_modal.html', event=event, timezone=timezone)
 
 
 @bp.record_once

@@ -11,7 +11,15 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('endDateTime', info.event.start.toJSON())
         }
         formData.append('eventTitle', info.event.title)
-        formData.append('eventId', info.event.id)
+        if (info.event.id) {
+            formData.append('eventId', info.event.id)
+        }
+        if (info.event.groupId) {
+            formData.append('groupId', info.event.groupId)
+        }
+        formData.append('initStartDateTime', info.oldEvent.start.toJSON())
+        formData.append('initEndDateTime', info.oldEvent.end.toJSON())
+        formData.append('timeZone', getTimeZone())
         formData.append('allDay', info.event.allDay)
         formData.append('eventDescription', info.event.extendedProps.description)
         // Set up our request
@@ -93,16 +101,25 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         select: function(info) {
-            url = '/render_event?startDateTime=' + info.start.toJSON() + '&endDateTime=' + info.end.toJSON() + '&allDay=' + info.allDay;
+            url = '/render_event?startDateTime=' + info.start.toJSON() + '&endDateTime=' + info.end.toJSON()
+                              + '&allDay=' + info.allDay + '&timeZone=' + getTimeZone();
             renderModal(url);
         },
 
         eventClick: function(info) {
             var url;
             if (calendar.getOption("editable")){
-                url = '/render_event?id=' + info.event.id;
+                if (info.event.id) {
+                    url = '/render_event?id=' + info.event.id;
+                } else {
+                    url = '/render_event?groupId=' + info.event.groupId + '&startDateTime=' + info.event.start.toJSON() + '&endDateTime=' + info.event.end.toJSON() + '&allDay=' + info.event.allDay;
+                }
             } else {
-                url = '/render_shifts?id=' + info.event.id + '&isEditable=' + calendar.getOption("editable");
+                if (info.event.id) {
+                    url = '/render_shifts?id=' + info.event.id + '&groupId=' + info.event.groupId + '&start=' + info.event.start.toJSON() + '&end=' + info.event.end.toJSON();
+                } else {
+                    url = '/render_shifts?groupId=' + info.event.groupId + '&startDateTime=' + info.event.start.toJSON() + '&endDateTime=' + info.event.end.toJSON() + '&allDay=' + info.event.allDay;
+                }
             }
             renderModal(url);
         },

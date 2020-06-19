@@ -1,6 +1,7 @@
-from sqlalchemy.types import TypeDecorator, CHAR
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
+
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.types import TypeDecorator, CHAR
 
 
 class GUID(TypeDecorator):
@@ -37,3 +38,10 @@ class GUID(TypeDecorator):
             if not isinstance(value, uuid.UUID):
                 value = uuid.UUID(value)
             return value
+
+
+def same_as(column_name):
+    def default_function(context):
+        return context.current_parameters.get(column_name)
+
+    return default_function

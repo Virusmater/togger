@@ -90,6 +90,11 @@ function signMyself(firstName, lastName) {
         .getElementById("newName")
         .value = firstName + " " + lastName
 }
+
+function getTimeZone() {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone
+}
+
 if (
     !
     isMobile()) {
