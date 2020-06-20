@@ -1,12 +1,12 @@
 <div class="form-group mb-0">
     <select class="custom-select" id="rruleGenerator" name="recurrent">
-        <option selectedvalue="">Doesn't repeat</option>
+        <option selected value="">Doesn't repeat</option>
         <option value="daily">Daily</option>
         <option value="weekly">Weekly on {{ weekday[1] }}</option>
         <option value="monthly">Monthly on {{ get_weekday_occurrence(event.start, timezone)[1] }} {{ weekday[1] }}
         </option>
         <option value="yearly">Annually on {{ get_date(event.start, timezone) }}</option>
         <option value="weekday">Every weekday (Monday to Friday)</option>
-        <option>Custom (doesn't work)</option>
+        <option value="">Custom (doesn't work yet)</option>
     </select>
 </div>

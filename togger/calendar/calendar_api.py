@@ -43,8 +43,8 @@ def post_share():
 @auth_dao.can_edit_events
 def change_share():
     user_id = request.form['userId']
-    role_name = request.form['roleName']
-    calendar_dao.change_share(user_id, role_name)
+    role_name = request.form['roleNameShares']
+    calendar_dao.change_share(user_id, int(role_name))
     return '', 204
 
 

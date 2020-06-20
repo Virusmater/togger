@@ -18,7 +18,7 @@ def login():
     email = request.form['email']
     user = auth_dao.get_user(email)
     if user and user.check_password(request.form['password']):
-        flask_login.login_user(user)
+        flask_login.login_user(user, remember=True)
         return redirect(url_for('main', **request.args))
     flash('Incorrect login or/and password. Please check it and try again', 'danger')
     return redirect(url_for('auth.login', **request.args))

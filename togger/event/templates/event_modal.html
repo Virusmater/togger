@@ -12,9 +12,8 @@
                     <input id="endDateTime" name="endDateTime" type="hidden" value="{{ event.end }}">
                     <input id="timeZone" name="timeZone" type="hidden" value="{{ timezone.zone }}">
                     <input id="eventId" name="eventId" type="hidden" value="{{ event.id if event.id else '' }}">
-                    {% if event.group_id %}
-                    <input id="groupId" name="groupId" type="hidden" value="{{ event.group_id }}">
-                    {% endif %}
+                    <input id="groupId" name="groupId" type="hidden"
+                           value="{{ event.group_id if event.group_id else '' }}">
                     <div class="form-group">
                         <input class="form-control" id="eventTitle" maxlength="80" name="eventTitle"
                                placeholder="event name" type="text" value="{{ event.title }}" required autofocus>
@@ -23,7 +22,7 @@
                         <textarea class="form-control" placeholder="event description" name="eventDescription"
                                   id="eventDescription" rows="3">{{ event.description if event.description }}</textarea>
                     </div>
-                    {% if not event.group_id %}
+                    {% if not event.group_id and not event.id %}
                     {% with weekday=get_weekday(event.start, timezone) %}
                     {% include 'rrule_generator.html' %}
                     {% endwith %}
@@ -33,9 +32,11 @@
             <div class="modal-footer">
                 <button class="btn btn-primary order-3" form="modalForm" type="submit"
                         onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_event') }}')">Save changes</button>
+                {% if event.group_id or event.id %}
                 <button class="btn btn-danger mr-auto order-1" form="modalForm"
                         onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.delete_event') }}', 'DELETE')" type="submit">
                 Delete
                 </button>
+                {% endif %}
                 <button class="btn btn-secondary order-2" data-dismiss="modal" type="button">Close</button>
             </div>

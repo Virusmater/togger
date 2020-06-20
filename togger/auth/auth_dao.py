@@ -21,7 +21,7 @@ def get_user(username):
 def get_user_by_id(id):
     if id is None:
         return
-    user = User.query.filter(User.id == id).first()
+    user = User.query.filter(User.alias_id == id).first()
     return user
 
 
@@ -29,7 +29,7 @@ def add_user(username, password, first_name, last_name):
     if username is None or password is None:
         return
     calendar = Calendar(name=username)
-    role = Role(type="manager", calendar=calendar, is_default=True)
+    role = Role(type=Role.OWNER, calendar=calendar, is_default=True)
     user = User(username=username, first_name=first_name, last_name=last_name, roles=[role])
     user.set_password(password)
     verify_email(user)
@@ -138,6 +138,5 @@ def can_edit_events(func):
         if role and role.can_edit_events:
             return func(*args, **kwargs)
         else:
-            return '', 401
-
+            return current_app.login_manager.unauthorized()
     return func_wrapper

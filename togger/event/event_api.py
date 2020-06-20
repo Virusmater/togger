@@ -22,7 +22,8 @@ def get_events():
 
 @bp.route('/', methods=['POST'])
 @flask_login.login_required
-def post_event(all_day=False, event_id=None, group_id=None, recurrent=None, description=None, init_start=None):
+def post_event(all_day=False, event_id=None, group_id=None, recurrent=None, description=None, init_start=None,
+               timezone=None):
     start = parser.parse(request.form['startDateTime'])
     end = parser.parse(request.form['endDateTime'])
     title = request.form['eventTitle']
@@ -37,8 +38,10 @@ def post_event(all_day=False, event_id=None, group_id=None, recurrent=None, desc
     if 'groupId' in request.form:
         group_id = request.form['groupId']
     if group_id and not event_id:
-        init_start = parser.parse(request.form['initStartDateTime'])
-    timezone = pytz.timezone(request.form['timeZone'])
+        if 'initStartDateTime' in request.form:
+            init_start = parser.parse(request.form['initStartDateTime'])
+    if request.form['timeZone']:
+        timezone = pytz.timezone(request.form['timeZone'])
     event_dao.save_event(title=title, description=description, start=start, end=end, all_day=all_day,
                          event_id=event_id, group_id=group_id, recurrent=recurrent, init_start=init_start,
                          timezone=timezone)

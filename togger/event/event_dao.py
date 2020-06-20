@@ -28,14 +28,13 @@ def get_recur_events(start, end, recur_events_unboxed):
         .filter((RecurEvent.end_recur >= start) | (RecurEvent.end_recur.is_(None))).all()
     for recur_event in recur_events:
         rrule = rrulestr(recur_event.rrule)
-        for start_date in list(rrule.between(after=start, before=end)):
+        for start_date in list(rrule.between(after=start, before=end, inc=True)):
             start_date = start_date.astimezone(UTC).replace(tzinfo=None)
             # nasty part, do not add recurrent event if unboxed version already there
             # check if user moved the original event or changed it anyhow, e.g added shifts
             if not any(recur_event_unboxed.group_id == recur_event.id and recur_event_unboxed.init_start == start_date
                        for recur_event_unboxed in recur_events_unboxed):
                 duration = recur_event.end - recur_event.start
-                print("duration", duration)
                 event = generate_event(recur_event.id, start=start_date, end=start_date + duration)
                 events.append(event)
     return events
@@ -49,6 +48,8 @@ def save_event(title, description, start, end, all_day=False, event_id=None, rec
         save_group_event(title=title.strip(), description=description, start=start, end=end, all_day=all_day,
                          timezone=timezone, recurrent=recurrent)
     else:
+        if not group_id:
+            group_id = None
         event = Event(title=title.strip(), description=description,
                       start=start, end=end, all_day=all_day, id=event_id, calendar_id=calendar_id, group_id=group_id)
         if init_start:
@@ -63,7 +64,7 @@ def save_group_event(title, description, start, end, timezone, recurrent, all_da
     rrule_str = get_common_rrule(start, timezone, recurrent)
     recur_event = RecurEvent(title=title.strip(), description=description,
                              start=start, end=end, start_recur=start, all_day=all_day,
-                             calendar_id=calendar_id, timezone=timezone.zone, rrule=rrule_str)
+                             calendar_id=calendar_id, rrule=rrule_str)
     db.session.merge(recur_event)
     db.session.commit()
 

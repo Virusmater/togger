@@ -13,18 +13,23 @@
         "{{ share.user.username }} ({{ share.user.first_name }} {{ share.user.last_name }})"
         readonly type="text">
         <div class="input-group-append ">
-            <select name="roleName" id="roleName"  autofocus class="custom-select"
+            <select autofocus class="custom-select" id="roleNameShares" name="roleNameShares"
                     onchange="changeShare(RoleForm{{ loop.index0 }}, '/api/v1/calendars/share')">
-                <option value="">Remove</option>
-                {% if share.type == 'user' %}
-                <option selected value="user">View</option>
+                <option value="0">Remove</option>
+                {% if share.type == 10 %}
+                <option selected value=10>View</option>
                 {% else %}
-                <option value="user">View</option>
+                <option value=10>View</option>
                 {% endif %}
-                {% if share.type == 'manager' %}
-                <option selected value="manager">Edit</option>
+                {% if share.type == 50 %}
+                <option selected value=50>Edit</option>
                 {% else %}
-                <option value="manager">Edit</option>
+                <option value=50>Edit</option>
+                {% endif %}
+                {% if share.type == 100 %}
+                <option selected value=100>Owner</option>
+                {% else %}
+                <option value=100>Owner</option>
                 {% endif %}
             </select>
         </div>

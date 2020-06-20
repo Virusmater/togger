@@ -6,8 +6,6 @@ from togger.auth import auth_dao
 from togger.auth.models import Role
 from togger.calendar.models import Share, Calendar
 
-ROLES = ["user", "manager"]
-
 
 @auth_dao.can_edit_events
 def save_settings(settings):
@@ -20,10 +18,10 @@ def save_settings(settings):
 
 @auth_dao.can_edit_events
 def share_calendar(role_name):
-    if role_name in ROLES:
-        share = Share(role_name=role_name, calendar_id=get_current_calendar().id)
-        return share
-    return None
+    print(role_name)
+    print(auth_dao.get_role().type)
+    if int(role_name) <= auth_dao.get_role().type:
+        return Share(role_name=role_name, calendar_id=get_current_calendar().id)
 
 
 @auth_dao.can_edit_events
@@ -35,9 +33,15 @@ def get_shares():
 
 @auth_dao.can_edit_events
 def change_share(user_id, role_name):
+    # don't allow to change to the role with higher access
+    if auth_dao.get_role().type < role_name:
+        return
     calendar = get_current_calendar()
     role = Role.query.filter(Role.calendar_id == calendar.id).filter(Role.user_id == user_id).first()
-    if role_name in ROLES:
+    if role_name > 0:
+        # if current role is owner - don't change it to something lower - everybody will loose the access
+        if role.type >= 100:
+            return role
         role.type = role_name
         db.session.merge(role)
     else:
@@ -82,7 +86,7 @@ def create(calendar_name):
     calendar = Calendar(name=calendar_name)
     for role in user.roles:
         role.is_default = False
-    role = Role(type="manager", calendar=calendar, is_default=True)
+    role = Role(type=Role.OWNER, calendar=calendar, is_default=True)
     user.roles.append(role)
     db.session.merge(user)
     db.session.commit()

@@ -57,7 +57,6 @@ class RecurEvent(EventBase):
     start_recur = db.Column(db.DateTime, nullable=False)
     end_recur = db.Column(db.DateTime)
     rrule = db.Column(db.String(256), nullable=False)
-    timezone = db.Column(db.String(256), nullable=False)
 
 
 class Shift(db.Model):

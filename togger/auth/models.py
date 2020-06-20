@@ -20,6 +20,7 @@ class User(db.Model, UserMixin):
     auth_p = URLSafeSerializer(db.app.config['SECRET_KEY'], "password")
 
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
+    alias_id = db.Column(GUID(), default=uuid.uuid4, nullable=False, unique=True)
     username = db.Column(db.String(80), nullable=False, unique=True)
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
@@ -29,6 +30,7 @@ class User(db.Model, UserMixin):
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
+        self.alias_id = uuid.uuid4()
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
@@ -55,10 +57,17 @@ class User(db.Model, UserMixin):
         self.username = data['username']
         return datetime.now() < datetime.strptime(data["valid_until"], '%d-%m-%Y')
 
+    def get_id(self):
+        return self.alias_id
+
 
 class Role(db.Model):
+    OWNER = 100
+    MANAGER = 50
+    USER = 10
+
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
-    type = db.Column(db.String(256), nullable=False)
+    type = db.Column(db.Integer, nullable=False)
     calendar_id = db.Column(GUID(), db.ForeignKey('calendar.id'), nullable=False)
     calendar = db.relationship("Calendar")
     user_id = db.Column(GUID(), db.ForeignKey('user.id'), nullable=False)
@@ -68,4 +77,4 @@ class Role(db.Model):
 
     @property
     def can_edit_events(self):
-        return self.type == "manager"
+        return int(self.type) >= Role.MANAGER

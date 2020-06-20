@@ -6,12 +6,8 @@
 </div>
 <div class="modal-body" id="modal-body">
     <form id="modalForm" onsubmit="return false">
-        {% if event.id %}
-        <input id="eventId" name="eventId" type="hidden" value="{{ event.id }}">
-        {% endif %}
-        {% if event.group_id %}
-        <input id="groupId" name="groupId" type="hidden" value="{{ event.group_id }}">
-        {% endif %}
+        <input id="eventId" name="eventId" type="hidden" value="{{ event.id if event.id else '' }}">
+        <input id="groupId" name="groupId" type="hidden" value="{{ event.group_id if event.group_id else '' }}">
         <input id="allDay" name="allDay" readonly type="hidden" value="{{ event.all_day }}">
         <input id="startDateTime" name="startDateTime" readonly type="hidden" value="{{ event.start }}">
         <input id="endDateTime" name="endDateTime" readonly type="hidden" value="{{ event.end }}">

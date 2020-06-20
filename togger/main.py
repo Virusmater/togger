@@ -38,7 +38,6 @@ def change_password():
     new_password = request.form['newPassword']
     if auth_dao.change_password(old_password, new_password):
         return '', 204
-
     else:
         return render_password(), 500
 
