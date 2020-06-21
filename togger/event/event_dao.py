@@ -4,6 +4,7 @@ import math
 from dateutil.rrule import rrulestr
 from dateutil.tz import UTC
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 
 from togger import db
 from togger.calendar import calendar_dao
@@ -118,8 +119,12 @@ def save_shift(event_id=None, new_person_name=None, shift_ids_to_remove=[], grou
     if new_person_name:
         shift = Shift(person=new_person_name.strip(), event_id=event_id)
         event.shifts.append(shift)
-    db.session.merge(event)
+    try:
+        db.session.merge(event)
+    except IntegrityError:
+        return False
     db.session.commit()
+    return True
 
 
 @auth_dao.has_role(Role.MANAGER)

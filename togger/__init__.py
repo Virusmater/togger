@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 application = Flask(__name__)
@@ -25,9 +26,4 @@ if os.environ.get("APP_URL"):
     application.config['APP_URL'] = os.environ.get("APP_URL")
 
 db = SQLAlchemy(application)
-
-from .event import models
-from .auth import models
-from .calendar import models
-
-db.create_all()
+migrate = Migrate(application, db)

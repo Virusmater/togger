@@ -7,6 +7,12 @@ services:
       - SQLALCHEMY_DATABASE_URI=sqlite:///resources/database.db
       - MODULE_NAME=togger.main
       - VARIABLE_NAME=application
+      - APP_URL=localhost
+      - SMTP_LOGIN=
+      - SMTP_MAILBOX=
+      - SMTP_PASSWORD=
+      - SMTP_PORT=
+      - SMTP_SERVER=
     build: .
     ports:
       - "5001:80"

@@ -1,5 +1,6 @@
 import uuid
 
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.ext.declarative import declared_attr
 
 from togger import db
@@ -63,6 +64,7 @@ class Shift(db.Model):
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
     person = db.Column(db.String(80), nullable=False)
     event_id = db.Column(GUID(), db.ForeignKey('event.id'), nullable=False)
+    UniqueConstraint(person, event_id, name='shift_person_event_key')
 
     @property
     def serialized(self):
