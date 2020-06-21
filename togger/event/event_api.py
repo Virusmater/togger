@@ -23,7 +23,7 @@ def get_events():
 @bp.route('/', methods=['POST'])
 @flask_login.login_required
 def post_event(all_day=False, event_id=None, group_id=None, recurrent=None, description=None, init_start=None,
-               timezone=None):
+               timezone=None, recurrent_interval=None):
     start = parser.parse(request.form['startDateTime'])
     end = parser.parse(request.form['endDateTime'])
     title = request.form['eventTitle']
@@ -31,6 +31,8 @@ def post_event(all_day=False, event_id=None, group_id=None, recurrent=None, desc
         description = request.form['eventDescription']
     if 'recurrent' in request.form:
         recurrent = request.form['recurrent']
+    if 'recurrentInterval' in request.form:
+        recurrent_interval = request.form['recurrentInterval']
     if 'allDay' in request.form:
         all_day = bool(strtobool(request.form['allDay']))
     if 'eventId' in request.form and request.form['eventId']:
@@ -43,7 +45,9 @@ def post_event(all_day=False, event_id=None, group_id=None, recurrent=None, desc
     if request.form['timeZone']:
         timezone = pytz.timezone(request.form['timeZone'])
     event_dao.save_event(title=title, description=description, start=start, end=end, all_day=all_day,
-                         event_id=event_id, group_id=group_id, recurrent=recurrent, init_start=init_start,
+                         event_id=event_id, group_id=group_id, recurrent=recurrent,
+                         recurrent_interval=recurrent_interval,
+                         init_start=init_start,
                          timezone=timezone)
     return '', 204
 

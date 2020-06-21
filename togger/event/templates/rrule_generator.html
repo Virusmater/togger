@@ -1,4 +1,4 @@
-<div class="form-group mb-0">
+<div class="input-group">
     <select class="custom-select" id="rruleGenerator" name="recurrent">
         <option selected value="">Doesn't repeat</option>
         <option value="daily">Daily</option>
@@ -7,6 +7,14 @@
         </option>
         <option value="yearly">Annually on {{ get_date(event.start, timezone) }}</option>
         <option value="weekday">Every weekday (Monday to Friday)</option>
-        <option value="">Custom (doesn't work yet)</option>
     </select>
+    <div class="input-group-append">
+        <select class="custom-select" id="recurrentInterval" name="recurrentInterval">'
+            <option value="1">Every time</option>
+            <option value="2">Every 2nd time</option>
+            <option value="3">Every 3rd time</option>
+            <option value="4">Every 4th time</option>
+            <option value="5">Every 5th time</option>
+        </select>
+    </div>
 </div>

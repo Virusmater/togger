@@ -41,12 +41,13 @@ def get_recur_events(start, end, recur_events_unboxed):
 
 
 @auth_dao.can_edit_events
-def save_event(title, description, start, end, all_day=False, event_id=None, recurrent=False, group_id=None,
+def save_event(title, description, start, end, all_day=False, event_id=None, recurrent=False, recurrent_interval=None,
+               group_id=None,
                init_start=None, timezone=None):
     calendar_id = calendar_dao.get_current_calendar().id
     if recurrent:
         save_group_event(title=title.strip(), description=description, start=start, end=end, all_day=all_day,
-                         timezone=timezone, recurrent=recurrent)
+                         timezone=timezone, recurrent=recurrent, recurrent_interval=recurrent_interval)
     else:
         if not group_id:
             group_id = None
@@ -59,9 +60,9 @@ def save_event(title, description, start, end, all_day=False, event_id=None, rec
 
 
 @auth_dao.can_edit_events
-def save_group_event(title, description, start, end, timezone, recurrent, all_day=False):
+def save_group_event(title, description, start, end, timezone, recurrent, recurrent_interval=None, all_day=False):
     calendar_id = calendar_dao.get_current_calendar().id
-    rrule_str = get_common_rrule(start, timezone, recurrent)
+    rrule_str = get_common_rrule(start, timezone, recurrent, recurrent_interval)
     recur_event = RecurEvent(title=title.strip(), description=description,
                              start=start, end=end, start_recur=start, all_day=all_day,
                              calendar_id=calendar_id, rrule=rrule_str)
@@ -154,23 +155,23 @@ def get_weekday_occurrence(date, timezone):
             .format(weekday_occurrence=weekday_occurrence, date_suffix=date_suffix[0])
 
 
-def get_common_rrule(date, timezone, recurrent):
-    rrule_str = ""
+def get_common_rrule(date, timezone, recurrent, recurrent_interval=0):
+    rrule_str = "RRULE:INTERVAL={recurrent_interval};".format(recurrent_interval=recurrent_interval)
     if recurrent == 'daily':
-        rrule_str = "RRULE:FREQ=DAILY;WKST=MO"
+        rrule_str += "FREQ=DAILY;WKST=MO"
     elif recurrent == 'weekly':
         weekday = get_weekday(date, timezone)[1]
-        rrule_str = "RRULE:FREQ=WEEKLY;WKST=MO;BYDAY={byday}".format(byday=weekday[0:2].upper())
+        rrule_str += "FREQ=WEEKLY;WKST=MO;BYDAY={byday}".format(byday=weekday[0:2].upper())
     elif recurrent == 'monthly':
         weekday = get_weekday(date, timezone)[1]
-        rrule_str = "RRULE:FREQ=MONTHLY;WKST=MO;BYDAY={byday};BYMONTHDAY={bymonthday}".format(
+        rrule_str += "FREQ=MONTHLY;WKST=MO;BYDAY={byday};BYMONTHDAY={bymonthday}".format(
             byday=weekday[0:2].upper(),
             bymonthday=_get_monthly_days(get_weekday_occurrence(date, timezone)[0]))
     elif recurrent == 'yearly':
-        rrule_str = "RRULE:FREQ=YEARLY;WKST=MO;BYMONTH={bymonth};BYMONTHDAY={bymonthday}".format(
+        rrule_str += "FREQ=YEARLY;WKST=MO;BYMONTH={bymonth};BYMONTHDAY={bymonthday}".format(
             bymonth=date.astimezone(timezone).month, bymonthday=date.astimezone(timezone).day)
     elif recurrent == 'weekday':
-        rrule_str = "RRULE:FREQ=DAILY;WKST=MO;BYDAY=MO,TU,WE,TH,FR"
+        rrule_str += "FREQ=WEEKLY;WKST=MO;BYDAY=MO,TU,WE,TH,FR"
     dtstart = "DTSTART;TZID={timezone}:{iso_date}".format(
         timezone=timezone.zone, iso_date=date.astimezone(timezone).replace(tzinfo=None).isoformat())
     return "{dtstart}\n{rrule_str}".format(dtstart=dtstart, rrule_str=rrule_str)

@@ -139,4 +139,21 @@ def can_edit_events(func):
             return func(*args, **kwargs)
         else:
             return current_app.login_manager.unauthorized()
+
     return func_wrapper
+
+
+def has_role(role_type):
+    def decorator(function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            role = get_role()
+            if role and role.type >= role_type:
+                result = function(*args, **kwargs)
+            else:
+                result = current_app.login_manager.unauthorized()
+            return result
+
+        return wrapper
+
+    return decorator

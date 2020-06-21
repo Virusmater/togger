@@ -18,10 +18,8 @@ def save_settings(settings):
 
 @auth_dao.can_edit_events
 def share_calendar(role_name):
-    print(role_name)
-    print(auth_dao.get_role().type)
-    if int(role_name) <= auth_dao.get_role().type:
-        return Share(role_name=role_name, calendar_id=get_current_calendar().id)
+    if int(role_name) <= auth_dao.get_role().type and role_name < Role.OWNER:
+        return Share(role_type=role_name, calendar_id=get_current_calendar().id)
 
 
 @auth_dao.can_edit_events
@@ -52,14 +50,19 @@ def change_share(user_id, role_name):
 
 def accept_share(share_token):
     share = Share(token=share_token)
-    user = flask_login.current_user
-    for role in user.roles:
-        if role.calendar_id == share.calendar_id:
-            return
+    # user = flask_login.current_user
     if share.is_valid():
-        for role in user.roles:
+        for role in flask_login.current_user.roles:
             role.is_default = False
-        role = Role(type=share.role_name, calendar_id=share.calendar_id, is_default=True)
+            if role.calendar_id == share.calendar_id:
+                if role.type < share.role_type:
+                    db.session.delete(role)
+                    db.session.commit()
+                    break
+                else:
+                    return
+        role = Role(type=share.role_type, calendar_id=share.calendar_id,
+                    is_default=True)
         flask_login.current_user.roles.append(role)
         db.session.merge(flask_login.current_user)
         db.session.commit()

@@ -78,3 +78,6 @@ class Role(db.Model):
     @property
     def can_edit_events(self):
         return int(self.type) >= Role.MANAGER
+
+    def has_role(self, role_type):
+        return self.type >= role_type
