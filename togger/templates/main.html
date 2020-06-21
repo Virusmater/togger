@@ -1,17 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Calendar{% endblock %}
 {% block scripts %}
-    {{ super() }}
-    <!--  fullcalendar  -->
-    <link href="{{ url_for(
-    'static', filename='main.min.css') }}" rel='stylesheet' />
-    <script src="{{ url_for(
-    'static', filename='main.min.js') }}"></script>
-    {% if calendar %}
-    {% with settings=calendar.get_settings() %}
-        <script>{% include 'fullcalendar.js' %}</script>
-    {% endwith %}
-    {% endif %}
+{{ super() }}
+<!--  fullcalendar  -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.0.0-rc/main.min.css" rel='stylesheet'/>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.0.0-rc/main.min.js"></script>
+{% if calendar %}
+{% with settings=calendar.get_settings() %}
+<script>{% include 'fullcalendar.js' %}</script>
+{% endwith %}
+{% endif %}
 {% endblock %}
 {% block main %}
 
@@ -30,10 +28,15 @@
 </main>
 {% if not current_user.is_verified %}
 <script type="text/javascript">
-    renderModal('/auth/render_verify');
-    $(window).on('load',function(){
-        $('#modal').modal('show');
-    });
+    <!--  silly way to make reminder about email less annoying  -->
+    random = Math.floor(Math.random() * 3)
+    if (random === 0){
+        renderModal('/auth/render_verify');
+        $(window).on('load',function(){
+            $('#modal').modal('show');
+        });
+    }
 </script>
 {% endif %}
 {% endblock %}
+

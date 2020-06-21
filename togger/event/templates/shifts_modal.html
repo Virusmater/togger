@@ -6,8 +6,12 @@
 </div>
 <div class="modal-body" id="modal-body">
     <form id="modalForm" onsubmit="return false">
-        <input id="eventId" name="eventId" type="hidden" value="{{ event.id }}">
-        <textarea class="form-control" rows="3" readonly>{{ event.description }}</textarea>
+        <input id="eventId" name="eventId" type="hidden" value="{{ event.id if event.id else '' }}">
+        <input id="groupId" name="groupId" type="hidden" value="{{ event.group_id if event.group_id else '' }}">
+        <input id="allDay" name="allDay" readonly type="hidden" value="{{ event.all_day }}">
+        <input id="startDateTime" name="startDateTime" readonly type="hidden" value="{{ event.start }}">
+        <input id="endDateTime" name="endDateTime" readonly type="hidden" value="{{ event.end }}">
+        <textarea class="form-control" readonly rows="3">{{ event.description }}</textarea>
         <ul class="list-group mt-1">
             {% for shift in event.shifts %}
             <label class="list-group-item mb-0 " for="ShiftCheckBox{{ shift.id }}">
@@ -20,25 +24,24 @@
                 </li>
             </label>
             {% endfor %}
-
-
-
-
         </ul>
-                    <div class="input-group mt-1">
-            <input class="form-control " id="newName" name="newNameText" placeholder="Put your or friend's name"
-                   type="text" autofocus>
-                          <div class="input-group-append">
-              <button class="btn btn-success" type="button"
-                      onclick="signMyself('{{ current_user.first_name }}', '{{ current_user.last_name }}')"
-              >I'm in!</button>
-              </div>
-                </div>
+        <div class="input-group mt-1">
+            <input autofocus class="form-control " id="newName" name="newNameText"
+                   placeholder="Put your or friend's name" type="text">
+            <div class="input-group-append">
+                <button class="btn btn-success"
+                        onclick="signMyself('{{ current_user.first_name }}', '{{ current_user.last_name }}')"
+                        type="button"
+                >I'm in!
+                </button>
+            </div>
+        </div>
     </form>
 </div>
 <div class="modal-footer">
     <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-    <button class="btn btn-primary" form="modalForm" onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_shift') }}')"
+    <button class="btn btn-primary" form="modalForm"
+            onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_shift') }}')"
             type="submit">Save changes
     </button>
 </div>

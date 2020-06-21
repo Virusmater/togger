@@ -34,22 +34,23 @@ def _gen_valid_until():
 class Share:
     auth_s = URLSafeSerializer(db.app.config['SECRET_KEY'], "share")
 
-    def __init__(self, role_name=None, calendar_id=None, token=None):
+    def __init__(self, role_type=None, calendar_id=None, token=None):
         if token:
             self._load_token(token=token)
         else:
-            self.role_name = role_name
+            self.role_type = role_type
             self.calendar_id = calendar_id
             self.valid_until = _gen_valid_until()
 
     def generate_token(self):
         return self.auth_s.dumps(
-            {"role_name": self.role_name, "calendar_id": str(self.calendar_id), "valid_until": self.valid_until.strftime('%d-%m-%Y')})
+            {"role_type": self.role_type, "calendar_id": str(self.calendar_id),
+             "valid_until": self.valid_until.strftime('%d-%m-%Y')})
 
     def _load_token(self, token):
         try:
             data = self.auth_s.loads(token)
-            self.role_name = data["role_name"]
+            self.role_type = int(data["role_type"])
             self.calendar_id = uuid.UUID(data["calendar_id"])
             self.valid_until = datetime.strptime(data["valid_until"], '%d-%m-%Y')
         except BadSignature:

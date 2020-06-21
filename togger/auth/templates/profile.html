@@ -6,13 +6,13 @@
 <form action="{{ url_for('auth_api.update_user') }}" method="post">
   <div class="form-group">
     <label for="firstName">First name</label>
-    <input type="text" class="form-control" name="firstName" id="firstName" placeholder="16:00:00"
+    <input class="form-control" id="firstName" name="firstName" placeholder="First name" required type="text"
            value="{{ current_user.first_name }}">
   </div>
   <div class="form-group">
     <label for="lastName">Last name</label>
-    <input type="text" class="form-control" name="lastName" id="lastName" placeholder="1"
-           value="{{ current_user.last_name }}">
+      <input class="form-control" id="lastName" name="lastName" placeholder="Last name" required type="text"
+             value="{{ current_user.last_name }}">
   </div>
   <button type="submit" class="btn btn-primary">Save</button>
   <button class="btn btn-danger float-right" onclick="renderModal('/render_password')" type="button">Chage password

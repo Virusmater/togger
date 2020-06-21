@@ -4,7 +4,7 @@ from flask import request, render_template, redirect, url_for
 from togger import application
 from togger.auth import auth_dao, auth_api
 from togger.calendar import calendar_dao, calendar, calendar_api
-from togger.event import event, event_api
+from togger.event import event, event_api, event_dao
 from .auth import auth
 
 application.register_blueprint(event.bp)
@@ -38,11 +38,11 @@ def change_password():
     new_password = request.form['newPassword']
     if auth_dao.change_password(old_password, new_password):
         return '', 204
-
     else:
         return render_password(), 500
 
 
 @application.context_processor
 def utility_processor():
-    return dict(roles=auth_dao.get_roles, current_role=auth_dao.get_role)
+    return dict(roles=auth_dao.get_roles, current_role=auth_dao.get_role, get_weekday=event_dao.get_weekday,
+                get_weekday_occurrence=event_dao.get_weekday_occurrence, get_date=event_dao.get_date)

@@ -11,7 +11,13 @@
 
     <input class="form-control" id="inputEmail" name="email" placeholder="Email address" required
            type="email" maxlength="80">
-    <input class="form-control" id="inputPassword" name="password" placeholder="Password" required type="password">
+    <input type="hidden"/>
+    <div class="input-group show-password" id="show_hide_password">
+        <input class="form-control" id="inputPassword" name="password" placeholder="Password" required type="password">
+        <div class="input-group-append">
+            <span class="input-group-text"><a class="text-dark" href=""><i class="fa fa-eye"></i></a></span>
+        </div>
+    </div>
     <button class="btn btn-lg btn-primary btn-block my-2" type="submit">Sign up</button>
     <a class="text-decoration-none" href="login?{{ query_string }}">or sign in</a> /
     <a class="text-decoration-none" href="forgot">forgot password</a>

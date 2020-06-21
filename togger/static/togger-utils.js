@@ -1,4 +1,7 @@
 function submit_modal(form, modal, url, method) {
+    if (form.checkValidity() == false) {
+        return;
+    }
     if(typeof method === "undefined")
         {method = 'POST';}
     var request = new XMLHttpRequest();
@@ -6,7 +9,11 @@ function submit_modal(form, modal, url, method) {
     request.onload = function() {
         if (this.status >= 200 && this.status < 400) {
             $(modal).modal('hide')
-            calendar.refetchEvents()
+            if (this.responseURL.includes('change_password')){
+                window.location.replace("/")
+            } else {
+                calendar.refetchEvents()
+            }
         } else {
             document
                 .getElementById("modalContent")
@@ -59,9 +66,9 @@ function newShare(form, modal, url) {
     formData = new FormData(form);
     request.onload = function() {
         if (this.status >= 200 && this.status < 400) {
-            document
-                .getElementById("shareUrl")
-                .value = this.response
+            document.getElementById('roleName').style.display = "none";
+            document.getElementById('buttonCopyShare').style.display = "initial"
+            document.getElementById("shareUrl").value = this.response;
         }
     };
     request.open('POST', url);
@@ -69,12 +76,28 @@ function newShare(form, modal, url) {
     request.send(formData);
 }
 
+function copyText(inputField) {
+    /* Select the text field */
+    inputField.select();
+    inputField.setSelectionRange(0, 99999); /*For mobile devices*/
+    /* Copy the text inside the text field */
+    document.execCommand("copy");
+}
 
-function changeShare(form, url) {
+function changeShare(form, url, confirm) {
     var request = new XMLHttpRequest();
     formData = new FormData(form);
+    console.log(formData);
+    if (!confirm && formData.get('roleNameShares') >= 100) {
+        renderModal("/render_transfer_ownership?form_id="+form.id);
+        return
+    }
     request.open('PUT', url);
-    // Send our FormData object; HTTP headers are set automatically
+    request.onload = function() {
+        if (this.status >= 200 && this.status < 400) {
+            window.location.replace("/shares")
+        }
+    };
     request.send(formData);
 }
 
@@ -83,10 +106,18 @@ function signMyself(firstName, lastName) {
         .getElementById("newName")
         .value = firstName + " " + lastName
 }
-if (
-    !
-    isMobile()) {
+
+function getTimeZone() {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone
+}
+
+if (!isMobile()) {
     $(document).on('shown.bs.modal', function(e) {
         $('[autofocus]', e.target).focus();
     });
 }
+
+
+$(document).on('shown.bs.modal', function(e) {
+    $('[data-toggle="popover"]').popover()
+});

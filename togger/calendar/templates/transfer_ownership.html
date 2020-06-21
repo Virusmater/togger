@@ -1,0 +1,17 @@
+<div class="modal-header">
+    <h5 class="modal-title">Transfer ownership</h5>
+    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body" id="modal-body">
+    <div class="alert alert-danger" role="alert">Do you really want to transfer the ownership? That wouldn't be
+        possible to cancel.
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+    <button class="btn btn-primary" onclick="changeShare({{ form_id }}, '/api/v1/calendars/share', true)"
+            type="button">Transfer
+    </button>
+</div>

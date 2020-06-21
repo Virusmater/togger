@@ -21,7 +21,7 @@ def get_user(username):
 def get_user_by_id(id):
     if id is None:
         return
-    user = User.query.filter(User.id == id).first()
+    user = User.query.filter(User.alias_id == id).first()
     return user
 
 
@@ -29,7 +29,7 @@ def add_user(username, password, first_name, last_name):
     if username is None or password is None:
         return
     calendar = Calendar(name=username)
-    role = Role(type="manager", calendar=calendar, is_default=True)
+    role = Role(type=Role.OWNER, calendar=calendar, is_default=True)
     user = User(username=username, first_name=first_name, last_name=last_name, roles=[role])
     user.set_password(password)
     verify_email(user)
@@ -44,7 +44,7 @@ def update_user(first_name, last_name):
     user.last_name = last_name
     db.session.merge(user)
     db.session.commit()
-    return user
+    return True
 
 
 def verify_email(user):
@@ -64,7 +64,7 @@ def restore_password(token, new_password):
         flask_login.login_user(user, remember=True)
         return True
     else:
-        flash("Restoration link got expired. Please request a new one.", 'error')
+        flash("Restoration link got expired. Please request a new one.", 'danger')
         return False
 
 
@@ -104,7 +104,7 @@ def confirm_verify_email(token):
         db.session.merge(user)
         db.session.commit()
     else:
-        flash('Verification link got expired. Please request a new one.')
+        flash('Verification link got expired. Please request a new one.', 'danger')
 
 
 def change_password(old_password, new_password):
@@ -112,8 +112,9 @@ def change_password(old_password, new_password):
         flask_login.current_user.set_password(new_password)
         db.session.merge(flask_login.current_user)
         db.session.commit()
+        flash('Password was changed. Please sign in using new password.', 'success')
         return True
-    flash('Current password is incorrect')
+    flash('Current password is incorrect.', 'danger')
     return False
 
 
@@ -131,13 +132,15 @@ def get_role():
     return None
 
 
-def can_edit_events(func):
-    @wraps(func)
-    def func_wrapper(*args, **kwargs):
-        role = get_role()
-        if role and role.can_edit_events:
-            return func(*args, **kwargs)
-        else:
-            return '', 401
-
-    return func_wrapper
+def has_role(role_type):
+    def decorator(function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            role = get_role()
+            if role and role.type >= role_type:
+                result = function(*args, **kwargs)
+            else:
+                result = current_app.login_manager.unauthorized()
+            return result
+        return wrapper
+    return decorator
