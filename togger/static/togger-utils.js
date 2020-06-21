@@ -9,7 +9,11 @@ function submit_modal(form, modal, url, method) {
     request.onload = function() {
         if (this.status >= 200 && this.status < 400) {
             $(modal).modal('hide')
-            calendar.refetchEvents()
+            if (this.responseURL.includes('change_password')){
+                window.location.replace("/")
+            } else {
+                calendar.refetchEvents()
+            }
         } else {
             document
                 .getElementById("modalContent")
@@ -98,9 +102,7 @@ function getTimeZone() {
     return Intl.DateTimeFormat().resolvedOptions().timeZone
 }
 
-if (
-    !
-    isMobile()) {
+if (!isMobile()) {
     $(document).on('shown.bs.modal', function(e) {
         $('[autofocus]', e.target).focus();
     });

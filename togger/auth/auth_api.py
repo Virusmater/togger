@@ -1,6 +1,7 @@
 import flask_login
-from flask import Blueprint, request
+from flask import Blueprint, request, flash, url_for
 from flask_login import login_required
+from werkzeug.utils import redirect
 
 from togger.auth import auth_dao
 
@@ -10,8 +11,9 @@ bp = Blueprint("auth_api", __name__, url_prefix="/api/v1/users")
 @bp.route("/", methods=['PUT', 'POST'])
 @login_required
 def update_user():
-    auth_dao.update_user(first_name=request.form['firstName'], last_name=request.form['lastName'])
-    return '', 204
+    if auth_dao.update_user(first_name=request.form['firstName'], last_name=request.form['lastName']):
+        flash("Profile updated", 'success')
+    return redirect(url_for('auth.render_profile'))
 
 
 @bp.route("/resend_email", methods=['POST'])

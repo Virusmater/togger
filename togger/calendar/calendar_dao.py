@@ -1,4 +1,5 @@
 import flask_login
+from flask import flash
 from flask.json import dumps
 
 from togger import db
@@ -50,7 +51,6 @@ def change_share(user_id, role_name):
 
 def accept_share(share_token):
     share = Share(token=share_token)
-    # user = flask_login.current_user
     if share.is_valid():
         for role in flask_login.current_user.roles:
             role.is_default = False
@@ -66,6 +66,7 @@ def accept_share(share_token):
         flask_login.current_user.roles.append(role)
         db.session.merge(flask_login.current_user)
         db.session.commit()
+        flash("New calendar was added", 'success')
 
 
 def get_current_calendar():

@@ -44,7 +44,7 @@ def update_user(first_name, last_name):
     user.last_name = last_name
     db.session.merge(user)
     db.session.commit()
-    return user
+    return True
 
 
 def verify_email(user):
@@ -112,8 +112,9 @@ def change_password(old_password, new_password):
         flask_login.current_user.set_password(new_password)
         db.session.merge(flask_login.current_user)
         db.session.commit()
+        flash('Password was changed. Please sign in using new password.', 'success')
         return True
-    flash('Current password is incorrect', 'danger')
+    flash('Current password is incorrect.', 'danger')
     return False
 
 

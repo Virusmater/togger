@@ -1,5 +1,5 @@
 import flask_login
-from flask import Blueprint, request, url_for
+from flask import Blueprint, request, url_for, flash
 from werkzeug.utils import redirect
 
 from togger.auth import auth_dao
@@ -52,13 +52,13 @@ def change_share():
 
 @bp.route('/settings', methods=['POST'])
 @flask_login.login_required
-@auth_dao.has_role(Role.OWNER)
 def post_settings():
     settings = {'scrollTime': request.form['scrollTime'], 'firstDay': request.form['firstDay'],
                 'slotMinTime': request.form['slotMinTime'], 'slotMaxTime': request.form['slotMaxTime'],
                 'nextDayThreshold': request.form['nextDayThreshold']}
-    calendar_dao.save_settings(settings)
-    return '', 204
+    if calendar_dao.save_settings(settings):
+        flash("Settings saved", 'success')
+    return redirect(url_for('render_settings'))
 
 
 @bp.route('/default', methods=['POST'])

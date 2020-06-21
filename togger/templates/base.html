@@ -100,6 +100,13 @@
         </div>
     </div>
 </nav>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="text-center alert alert-{{ category }}" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 {% block main %}{% endblock %}
 <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="modal" role="dialog"
      tabindex="-1">
