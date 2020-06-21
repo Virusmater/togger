@@ -64,7 +64,7 @@ def restore_password(token, new_password):
         flask_login.login_user(user, remember=True)
         return True
     else:
-        flash("Restoration link got expired. Please request a new one.", 'error')
+        flash("Restoration link got expired. Please request a new one.", 'danger')
         return False
 
 
@@ -104,7 +104,7 @@ def confirm_verify_email(token):
         db.session.merge(user)
         db.session.commit()
     else:
-        flash('Verification link got expired. Please request a new one.')
+        flash('Verification link got expired. Please request a new one.', 'danger')
 
 
 def change_password(old_password, new_password):
@@ -113,7 +113,7 @@ def change_password(old_password, new_password):
         db.session.merge(flask_login.current_user)
         db.session.commit()
         return True
-    flash('Current password is incorrect')
+    flash('Current password is incorrect', 'danger')
     return False
 
 

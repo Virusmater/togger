@@ -25,8 +25,11 @@
           integrity="sha256-FAOaXTpl90/K8cXmSdsskbQN3nKYulhCpPbcFzGTWKI=" rel="stylesheet"/>
     <!-- togger -->
     <script src="{{ url_for('static', filename='togger-utils.js') }}"></script>
-    <link href="{{ url_for(
-    'static', filename='togger.css') }}" rel='stylesheet'/>
+    <link href="{{ url_for('static', filename='togger.css') }}" rel='stylesheet'/>
+    <script src="{{ url_for('static', filename='signin.js') }}"></script>
+    <!-- Icons -->
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" rel="stylesheet">
     {% endblock %}
 </head>
 <body>

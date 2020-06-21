@@ -40,13 +40,18 @@ body {
   z-index: 2;
 }
 
+.show-password .form-control:focus {
+  z-index: 2;
+}
+
+
 .form-signin input:first-of-type:not(:last-of-type) {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.form-signin input:last-of-type:not(:first-of-type) {
+.show-password .form-signin input:last-of-type:not(:first-of-type) {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
@@ -54,4 +59,12 @@ body {
 .form-signin input:not(:last-of-type):not(:first-of-type) {
   margin-bottom: -1px;
   border-radius: 0;
+}
+
+.show-password input {
+  border-top-left-radius: 0;
+}
+
+.show-password .input-group-text {
+  border-top-right-radius: 0;
 }
