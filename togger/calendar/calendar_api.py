@@ -3,6 +3,7 @@ from flask import Blueprint, request, url_for
 from werkzeug.utils import redirect
 
 from togger.auth import auth_dao
+from togger.auth.models import Role
 from togger.calendar import calendar_dao
 
 bp = Blueprint("calendar_api", __name__, url_prefix="/api/v1/calendars")
@@ -20,6 +21,7 @@ def post_calendars():
 
 @bp.route('/', methods=['DELETE'])
 @flask_login.login_required
+@auth_dao.has_role(Role.OWNER)
 def delete_calendar():
     calendar_dao.delete()
     return redirect(url_for('main'))
@@ -27,7 +29,7 @@ def delete_calendar():
 
 @bp.route('/share', methods=['POST'])
 @flask_login.login_required
-@auth_dao.can_edit_events
+@auth_dao.has_role(Role.MANAGER)
 def post_share():
     role_name = int(request.form['roleName'])
     share = calendar_dao.share_calendar(role_name)
@@ -40,7 +42,7 @@ def post_share():
 
 @bp.route('/share', methods=['PUT'])
 @flask_login.login_required
-@auth_dao.can_edit_events
+@auth_dao.has_role(Role.OWNER)
 def change_share():
     user_id = request.form['userId']
     role_name = request.form['roleNameShares']
@@ -50,7 +52,7 @@ def change_share():
 
 @bp.route('/settings', methods=['POST'])
 @flask_login.login_required
-@auth_dao.has_role(100)
+@auth_dao.has_role(Role.OWNER)
 def post_settings():
     settings = {'scrollTime': request.form['scrollTime'], 'firstDay': request.form['firstDay'],
                 'slotMinTime': request.form['slotMinTime'], 'slotMaxTime': request.form['slotMaxTime'],

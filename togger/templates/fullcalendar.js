@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: isMobile() ? 'dayGridMonth,timeGridDay,listWeek' : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
-        {% if current_role().can_edit_events %}
+        {% if current_role().has_role(50) %}
         headerToolbar: {
             left: isMobile() ? 'prev,next' : 'prev,next today toggleEditButton',
             center: 'title',

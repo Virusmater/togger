@@ -9,6 +9,7 @@ from togger import db
 from togger.calendar import calendar_dao
 from .models import Shift, Event, RecurEvent
 from ..auth import auth_dao
+from ..auth.models import Role
 
 
 def get_events(start, end):
@@ -40,7 +41,7 @@ def get_recur_events(start, end, recur_events_unboxed):
     return events
 
 
-@auth_dao.can_edit_events
+@auth_dao.has_role(Role.MANAGER)
 def save_event(title, description, start, end, all_day=False, event_id=None, recurrent=False, recurrent_interval=None,
                group_id=None,
                init_start=None, timezone=None):
@@ -59,7 +60,7 @@ def save_event(title, description, start, end, all_day=False, event_id=None, rec
         db.session.commit()
 
 
-@auth_dao.can_edit_events
+@auth_dao.has_role(Role.MANAGER)
 def save_group_event(title, description, start, end, timezone, recurrent, recurrent_interval=None, all_day=False):
     calendar_id = calendar_dao.get_current_calendar().id
     rrule_str = get_common_rrule(start, timezone, recurrent, recurrent_interval)
@@ -70,7 +71,7 @@ def save_group_event(title, description, start, end, timezone, recurrent, recurr
     db.session.commit()
 
 
-@auth_dao.can_edit_events
+@auth_dao.has_role(Role.MANAGER)
 def remove_event(event_id):
     calendar_id = calendar_dao.get_current_calendar().id
     event = Event.query.filter(Event.id == event_id).filter(Event.calendar_id == calendar_id).first()
@@ -78,7 +79,7 @@ def remove_event(event_id):
     db.session.commit()
 
 
-@auth_dao.can_edit_events
+@auth_dao.has_role(Role.MANAGER)
 def remove_group_event(group_id):
     calendar_id = calendar_dao.get_current_calendar().id
     group_event = RecurEvent.query.filter(RecurEvent.id == group_id).filter(RecurEvent.calendar_id == calendar_id) \
@@ -121,6 +122,7 @@ def save_shift(event_id=None, new_person_name=None, shift_ids_to_remove=[], grou
     db.session.commit()
 
 
+@auth_dao.has_role(Role.MANAGER)
 def get_report(start, end, calendar_name="default"):
     if calendar_dao.get_current_calendar():
         calendar_id = calendar_dao.get_current_calendar().id

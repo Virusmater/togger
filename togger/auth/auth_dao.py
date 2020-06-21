@@ -131,18 +131,6 @@ def get_role():
     return None
 
 
-def can_edit_events(func):
-    @wraps(func)
-    def func_wrapper(*args, **kwargs):
-        role = get_role()
-        if role and role.can_edit_events:
-            return func(*args, **kwargs)
-        else:
-            return current_app.login_manager.unauthorized()
-
-    return func_wrapper
-
-
 def has_role(role_type):
     def decorator(function):
         @wraps(function)

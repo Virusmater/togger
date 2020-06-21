@@ -4,6 +4,7 @@ from flask_login import login_manager, LoginManager
 
 from togger import application
 from togger.auth import auth_dao
+from togger.auth.models import Role
 from togger.calendar import calendar_dao
 
 bp = Blueprint("calendar", __name__, template_folder="templates")
@@ -36,7 +37,7 @@ def render_new():
 
 @application.route('/shares', methods=['GET'])
 @flask_login.login_required
-@auth_dao.can_edit_events
+@auth_dao.has_role(Role.OWNER)
 def render_shares():
     shares = calendar_dao.get_shares()
     return render_template('shares.html', calendar=calendar_dao.get_current_calendar(), shares=shares)

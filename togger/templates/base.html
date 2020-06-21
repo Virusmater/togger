@@ -60,10 +60,12 @@
                         {% endfor %}
                     </form>
                     <div class="dropdown-divider"></div>
+                    {% if current_role() and current_role().has_role(50) %}
                     <button class="dropdown-item show" onclick="location.href='/shares';">Shares
                     </button>
                     <button class="dropdown-item show" onclick="location.href='/report';">Report
                     </button>
+                    {% endif %}
                     <button class="dropdown-item show" name="createNewCalendar" onclick="renderModal('/render_new')"
                             type="submit" value="createNewCalendar">Create new...
                     </button>

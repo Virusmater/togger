@@ -75,9 +75,5 @@ class Role(db.Model):
     is_default = db.Column(db.Boolean, default=False, nullable=False)
     UniqueConstraint(calendar_id, user_id, name='role_cal_user_key')
 
-    @property
-    def can_edit_events(self):
-        return int(self.type) >= Role.MANAGER
-
     def has_role(self, role_type):
         return self.type >= role_type
