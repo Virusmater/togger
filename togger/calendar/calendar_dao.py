@@ -31,18 +31,20 @@ def get_shares():
 
 
 @auth_dao.has_role(Role.OWNER)
-def change_share(user_id, role_name):
-    # don't allow to change to the role with higher access
-    if auth_dao.get_role().type < role_name:
-        return
+def change_share(user_id, role_type):
     calendar = get_current_calendar()
     role = Role.query.filter(Role.calendar_id == calendar.id).filter(Role.user_id == user_id).first()
-    if role_name > 0:
-        # if current role is owner - don't change it to something lower - everybody will loose the access
-        if role.type >= 100:
-            return role
-        role.type = role_name
-        db.session.merge(role)
+    if role.type >= Role.OWNER:
+        flash('Not possible to change the permission of the current owner.', 'warning')
+        return role
+    if role_type > 0:
+        if role_type >= Role.OWNER:
+            set_owner(user_id)
+            flash("Ownership for the calendar was transferred.", 'success')
+        else:
+            role.type = role_type
+            flash("Permission changed", 'success')
+            db.session.merge(role)
     else:
         db.session.delete(role)
     db.session.commit()
@@ -95,6 +97,18 @@ def create(calendar_name):
     db.session.merge(user)
     db.session.commit()
     return calendar
+
+
+@auth_dao.has_role(Role.OWNER)
+def set_owner(user_id):
+    for role in get_shares():
+        if str(role.user_id) == user_id:
+            role.type = Role.OWNER
+        else:
+            if role.type == Role.OWNER:
+                role.type = Role.MANAGER
+        db.session.merge(role)
+    db.session.commit
 
 
 @auth_dao.has_role(Role.OWNER)

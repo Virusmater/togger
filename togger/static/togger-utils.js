@@ -84,11 +84,20 @@ function copyText(inputField) {
     document.execCommand("copy");
 }
 
-function changeShare(form, url) {
+function changeShare(form, url, confirm) {
     var request = new XMLHttpRequest();
     formData = new FormData(form);
+    console.log(formData);
+    if (!confirm && formData.get('roleNameShares') >= 100) {
+        renderModal("/render_transfer_ownership?form_id="+form.id);
+        return
+    }
     request.open('PUT', url);
-    // Send our FormData object; HTTP headers are set automatically
+    request.onload = function() {
+        if (this.status >= 200 && this.status < 400) {
+            window.location.replace("/shares")
+        }
+    };
     request.send(formData);
 }
 

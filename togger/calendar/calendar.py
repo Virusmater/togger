@@ -1,5 +1,5 @@
 import flask_login
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from flask_login import login_manager, LoginManager
 
 from togger import application
@@ -33,6 +33,13 @@ def render_share():
 @flask_login.login_required
 def render_new():
     return render_template('new_modal.html')
+
+
+@application.route('/render_transfer_ownership', methods=['GET'])
+@flask_login.login_required
+def render_transfer_ownership():
+    form_id = request.args.get('form_id')
+    return render_template('transfer_ownership.html', form_id=form_id)
 
 
 @application.route('/shares', methods=['GET'])

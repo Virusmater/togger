@@ -142,7 +142,5 @@ def has_role(role_type):
             else:
                 result = current_app.login_manager.unauthorized()
             return result
-
         return wrapper
-
     return decorator

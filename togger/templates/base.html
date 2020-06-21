@@ -63,9 +63,11 @@
                         {% endfor %}
                     </form>
                     <div class="dropdown-divider"></div>
-                    {% if current_role() and current_role().has_role(50) %}
+                    {% if current_role() and current_role().has_role(100) %}
                     <button class="dropdown-item show" onclick="location.href='/shares';">Shares
                     </button>
+                    {% endif %}
+                    {% if current_role() and current_role().has_role(50) %}
                     <button class="dropdown-item show" onclick="location.href='/report';">Report
                     </button>
                     {% endif %}
