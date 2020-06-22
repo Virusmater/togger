@@ -9,3 +9,4 @@ psycopg2-binary~=2.8.5
 itsdangerous~=1.1.0
 pytz~=2020.1
 flask-migrate~=2.5.3
+flask-talisman~=0.7.0
