@@ -14,7 +14,12 @@ def login():
         if flask_login.current_user.is_authenticated:
             return redirect(url_for('main', **request.args))
         else:
-            return render_template('login.html', query_string=request.query_string)
+            share = request.args.get('share')
+            if share:
+                query_string = 'share={share}'.format(share=share)
+            else:
+                query_string = ''
+            return render_template('login.html', query_string=query_string)
     email = request.form['email']
     user = auth_dao.get_user(email)
     if user and user.check_password(request.form['password']):
@@ -30,7 +35,12 @@ def register():
         if flask_login.current_user.is_authenticated:
             return redirect(url_for('main', **request.args))
         else:
-            return render_template('register.html', query_string=request.query_string)
+            share = request.args.get('share')
+            if share:
+                query_string = 'share={share}'.format(share=share)
+            else:
+                query_string = ''
+            return render_template('register.html', query_string=query_string)
     email = request.form['email']
     if auth_dao.get_user(email) is None:
         first_name = request.form['firstName']
