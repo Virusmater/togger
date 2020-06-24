@@ -4,18 +4,19 @@
 <main role="main" class="container">
     <h1>Profile for {{ current_user.username }}</h1>
 <form action="{{ url_for('auth_api.update_user') }}" method="post">
+  {{ form.hidden_tag() }}
   <div class="form-group">
-    <label for="firstName">First name</label>
-    <input class="form-control" id="firstName" name="firstName" placeholder="First name" required type="text"
-           value="{{ current_user.first_name }}">
+    {{ form.firstName.label }}
+    {{ form.firstName(size=80, class_="form-control", placeholder="First name", value=current_user.first_name) }}
   </div>
   <div class="form-group">
-    <label for="lastName">Last name</label>
-      <input class="form-control" id="lastName" name="lastName" placeholder="Last name" required type="text"
-             value="{{ current_user.last_name }}">
+    {{ form.lastName.label }}
+    {{ form.lastName(size=80, class_="form-control", placeholder="Last name", value=current_user.last_name) }}
   </div>
-  <button type="submit" class="btn btn-primary">Save</button>
-  <button class="btn btn-danger float-right" onclick="renderModal('/render_password')" type="button">Chage password
+  {{ form.submit(class_="btn btn-primary") }}
+  <button class="btn btn-danger float-right" onclick="renderModal('{{ url_for('auth.render_password') }}')"
+          type="button">
+    Change password
   </button>
 </form>
 </main>

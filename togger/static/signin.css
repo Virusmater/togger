@@ -45,16 +45,12 @@ body {
 }
 
 
-.form-signin input:first-of-type:not(:last-of-type) {
+.form-signin input:not(:last-of-type):first-of-type {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.show-password .form-signin input:last-of-type:not(:first-of-type) {
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-}
 
 .form-signin input:not(:last-of-type):not(:first-of-type) {
   margin-bottom: -1px;

@@ -25,23 +25,6 @@ def main():
                            calendar=calendar_dao.get_current_calendar(), current_user=flask_login.current_user)
 
 
-@application.route('/render_password', methods=['GET'])
-@flask_login.login_required
-def render_password():
-    return render_template('password_modal.html')
-
-
-@application.route('/change_password', methods=['POST'])
-@flask_login.login_required
-def change_password():
-    old_password = request.form['oldPassword']
-    new_password = request.form['newPassword']
-    if auth_dao.change_password(old_password, new_password):
-        return '', 204
-    else:
-        return render_password(), 500
-
-
 @application.context_processor
 def utility_processor():
     return dict(roles=auth_dao.get_roles, current_role=auth_dao.get_role, get_weekday=event_dao.get_weekday,
