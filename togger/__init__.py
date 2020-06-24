@@ -4,6 +4,7 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
+from flask_wtf.csrf import CSRFProtect
 
 csp = {
     'script-src': ['\'unsafe-inline\'', '\'self\'', 'code.jquery.com', 'cdn.jsdelivr.net',
@@ -12,7 +13,7 @@ csp = {
 
 application = Flask(__name__)
 talisman = Talisman(application, content_security_policy=csp)
-
+CSRFProtect(application)
 application.config.from_object('togger.default_settings')
 if os.environ.get("SECRET_KEY"):
     application.secret_key = os.environ.get("SECRET_KEY")

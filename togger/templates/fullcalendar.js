@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('timeZone', getTimeZone())
         formData.append('allDay', info.event.allDay)
         formData.append('eventDescription', info.event.extendedProps.description)
+        formData.append('csrf_token', '{{ csrf_token() }}')
+
         // Set up our request
         request.open('POST', '{{ url_for("event_api.post_event") }}');
 

@@ -6,6 +6,7 @@
             </div>
             <div class="modal-body" id="modal-body">
                 <form id="modalForm" onsubmit="return false">
+                    {{ form.hidden_tag() }}
                     <input id="allDay" name="allDay" type="hidden" value="{{ event.all_day }}">
                     <input id="startDateTime" name="startDateTime" type="hidden"
                            value="{{ event.start }}">

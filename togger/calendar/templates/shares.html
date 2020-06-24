@@ -7,7 +7,8 @@
     {% if shares %}
     {% for share in shares %}
     <form id="RoleForm{{ loop.index0 }}" onsubmit="return false">
-    <div class="input-group mb-3">
+        {{ form.hidden_tag() }}
+        <div class="input-group mb-3">
         <input type="hidden" name="userId" value="{{ share.user.id }}">
         <input class="form-control" name="userId" value=
         "{{ share.user.username }} ({{ share.user.first_name }} {{ share.user.last_name }})"

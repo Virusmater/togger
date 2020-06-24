@@ -1,26 +1,28 @@
 import flask_login
 from flask import Blueprint, render_template, request
 from flask_login import login_manager, LoginManager
+from flask_wtf import FlaskForm
 
 from togger import application
 from togger.auth import auth_dao
 from togger.auth.models import Role
 from togger.calendar import calendar_dao
+from togger.calendar.calendar_forms import DeleteForm, NewForm, SettingsForm
 
 bp = Blueprint("calendar", __name__, template_folder="templates")
 login_manager = LoginManager()
 
 
-@application.route('/settings')
+@application.route('/settings', methods=['GET'])
 @flask_login.login_required
 def render_settings():
-    return render_template('settings.html', calendar=calendar_dao.get_current_calendar())
+    return render_template('settings.html', calendar=calendar_dao.get_current_calendar(), form=SettingsForm())
 
 
 @application.route('/render_delete', methods=['GET'])
 @flask_login.login_required
 def render_delete():
-    return render_template('delete_modal.html')
+    return render_template('delete_modal.html', form=DeleteForm())
 
 
 @application.route('/render_share', methods=['GET'])
@@ -32,7 +34,7 @@ def render_share():
 @application.route('/render_new', methods=['GET'])
 @flask_login.login_required
 def render_new():
-    return render_template('new_modal.html')
+    return render_template('new_modal.html', form=NewForm())
 
 
 @application.route('/render_transfer_ownership', methods=['GET'])
@@ -47,7 +49,7 @@ def render_transfer_ownership():
 @auth_dao.has_role(Role.OWNER)
 def render_shares():
     shares = calendar_dao.get_shares()
-    return render_template('shares.html', calendar=calendar_dao.get_current_calendar(), shares=shares)
+    return render_template('shares.html', calendar=calendar_dao.get_current_calendar(), shares=shares, form=FlaskForm())
 
 
 @bp.record_once

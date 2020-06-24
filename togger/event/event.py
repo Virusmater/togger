@@ -6,6 +6,7 @@ from dateutil import parser
 from dateutil.tz import UTC
 from flask import Blueprint, render_template, request
 from flask_login import login_manager, LoginManager
+from flask_wtf import FlaskForm
 
 from togger import application
 from togger.event import event_dao
@@ -43,7 +44,7 @@ def render_shifts(time_zone=None):
         event = event_dao.generate_event(group_id, start=request.args.get('startDateTime'),
                                          end=request.args.get('endDateTime'))
     return render_template('shifts_modal.html',
-                           event=event, time_zone=time_zone)
+                           event=event, time_zone=time_zone, form=FlaskForm())
 
 
 @application.route('/render_event', methods=['GET'])
@@ -65,7 +66,7 @@ def render_event(timezone=None):
         event = event_dao.generate_event(group_id, start=start, end=end)
     else:
         event = Event(id="", title="", start=start, end=end, all_day=request.args.get('allDay'))
-    return render_template('event_modal.html', event=event, timezone=timezone)
+    return render_template('event_modal.html', event=event, timezone=timezone, form=FlaskForm())
 
 
 @bp.record_once
