@@ -21,12 +21,11 @@ def login():
             else:
                 query_string = ''
             return render_template('login.html', query_string=query_string, form=LoginForm())
-    elif LoginForm().validate_on_submit():
-        email = request.form['email']
-        user = auth_dao.get_user(email)
-        if user and user.check_password(request.form['password']):
-            flask_login.login_user(user, remember=True)
-            return redirect(url_for('main', **request.args))
+    email = request.form['email']
+    user = auth_dao.get_user(email)
+    if user and user.check_password(request.form['password']):
+        flask_login.login_user(user, remember=True)
+        return redirect(url_for('main', **request.args))
     flash('Incorrect login or/and password. Please check it and try again', 'danger')
     return redirect(url_for('auth.login', **request.args))
 
@@ -43,15 +42,14 @@ def register():
             else:
                 query_string = ''
             return render_template('register.html', query_string=query_string, form=RegisterForm())
-    elif RegisterForm().validate_on_submit():
-        email = request.form['email']
-        if auth_dao.get_user(email) is None:
-            first_name = request.form['firstName']
-            last_name = request.form['lastName']
-            user = auth_dao.add_user(username=email, password=request.form['password'], first_name=first_name,
-                                     last_name=last_name)
-            flask_login.login_user(user, remember=True)
-            return redirect(url_for('main', **request.args))
+    email = request.form['email']
+    if auth_dao.get_user(email) is None:
+        first_name = request.form['firstName']
+        last_name = request.form['lastName']
+        user = auth_dao.add_user(username=email, password=request.form['password'], first_name=first_name,
+                                 last_name=last_name)
+        flask_login.login_user(user, remember=True)
+        return redirect(url_for('main', **request.args))
     flash('Such user already exists', 'danger')
     return redirect(url_for('auth.register', **request.args))
 
@@ -63,10 +61,9 @@ def render_forgot():
 
 @bp.route('/forgot', methods=['POST'])
 def post_forgot():
-    if ForgotForm().validate_on_submit():
-        email = request.form['email']
-        auth_dao.password_email(email)
-        flash('The email with the restoration link has been sent. Check your inbox.', 'success')
+    email = request.form['email']
+    auth_dao.password_email(email)
+    flash('The email with the restoration link has been sent. Check your inbox.', 'success')
     return redirect(url_for('auth.login', **request.args))
 
 
@@ -77,10 +74,9 @@ def render_restore(token):
 
 @bp.route('/restore/<token>', methods=['POST'])
 def restore(token):
-    if RestoreForm().validate_on_submit():
-        new_password = request.form['password']
-        if auth_dao.restore_password(token=token, new_password=new_password):
-            return redirect(url_for('main'))
+    new_password = request.form['password']
+    if auth_dao.restore_password(token=token, new_password=new_password):
+        return redirect(url_for('main'))
     else:
         return redirect(url_for('auth.render_forgot'))
 

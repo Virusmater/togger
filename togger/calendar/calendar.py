@@ -28,7 +28,7 @@ def render_delete():
 @application.route('/render_share', methods=['GET'])
 @flask_login.login_required
 def render_share():
-    return render_template('share_modal.html')
+    return render_template('share_modal.html', form=FlaskForm())
 
 
 @application.route('/render_new', methods=['GET'])
