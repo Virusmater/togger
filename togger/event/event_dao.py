@@ -97,7 +97,8 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
         for event in related_events:
             event.init_start = datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
                                                 start.replace(tzinfo=UTC).astimezone(timezone).time()) \
-                .replace(tzinfo=UTC)
+                .astimezone(UTC).replace(tzinfo=None)
+            print(event.init_start)
             event.recur_event = recur_event
             db.session.merge(event)
     else:
