@@ -105,8 +105,8 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
             print("start.replace(tzinfo=UTC).astimezone(timezone).time() ",
                   start.replace(tzinfo=UTC).astimezone(timezone).time())
 
-            print("datetime.combine".datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
-                                                      start.replace(tzinfo=UTC).astimezone(timezone).time()))
+            print("datetime.combine", datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
+                                                       start.replace(tzinfo=UTC).astimezone(timezone).time()))
             print("datetime.combine.astimezone(UTC)",
                   datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
                                    start.replace(tzinfo=UTC).astimezone(timezone).time()).astimezone(UTC))
