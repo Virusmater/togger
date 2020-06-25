@@ -1,6 +1,5 @@
 import calendar
 import math
-import uuid
 from datetime import datetime, timedelta
 
 from dateutil.rrule import rrulestr
@@ -78,18 +77,6 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
         recur_event.end_recur = init_start - timedelta(seconds=1)
         db.session.merge(recur_event)
 
-        # update init_date for all related events
-        related_events = Event.query.filter(Event.recur_id == id) \
-            .filter(Event.calendar_id == recur_event.calendar_id) \
-            .filter(Event.start >= start).all()
-        recur_event_id = uuid.uuid4()
-        for event in related_events:
-            event.init_start = datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
-                                                start.replace(tzinfo=UTC).astimezone(timezone).time()) \
-                .astimezone(UTC)
-            event.recur_id = recur_event_id
-            db.session.merge(event)
-
         # generate new id and update rrule for new recurrent event
         db.session.expunge(recur_event)
         make_transient(recur_event)
@@ -98,10 +85,21 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
         recur_event.end = end
         recur_event.rrule = rrule_str
         recur_event.end_recur = original_end_recur
-        recur_event.id = recur_event_id
+        recur_event.id = None
         recur_event.all_day = all_day
         recur_event.description = description
         recur_event.title = title
+
+        # update init_date for all related events
+        related_events = Event.query.filter(Event.recur_id == id) \
+            .filter(Event.calendar_id == recur_event.calendar_id) \
+            .filter(Event.start >= start).all()
+        for event in related_events:
+            event.init_start = datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
+                                                start.replace(tzinfo=UTC).astimezone(timezone).time()) \
+                .astimezone(UTC)
+            event.recur_event = recur_event
+            db.session.merge(event)
     else:
         calendar_id = calendar_dao.get_current_calendar().id
         rrule_str = get_common_rrule(start, timezone, recurrent, recurrent_interval)
