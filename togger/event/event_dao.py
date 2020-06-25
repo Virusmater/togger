@@ -2,8 +2,8 @@ import calendar
 import math
 from datetime import datetime, timedelta
 
+import pytz
 from dateutil.rrule import rrulestr
-from dateutil.tz import UTC
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import make_transient
@@ -33,9 +33,9 @@ def get_recur_events(start, end, recur_events_unboxed):
     for recur_event in recur_events:
         rrule = rrulestr(recur_event.rrule)
         if recur_event.end_recur:
-            rrule = rrule.replace(until=recur_event.end_recur.replace(tzinfo=UTC))
+            rrule = rrule.replace(until=recur_event.end_recur.replace(tzinfo=pytz.UTC))
         for start_date in list(rrule.between(after=start, before=end, inc=True)):
-            start_date = start_date.astimezone(UTC).replace(tzinfo=None)
+            start_date = start_date.astimezone(pytz.UTC).replace(tzinfo=None)
             # nasty part, do not add recurrent event if unboxed version already there
             # check if user moved the original event or changed it anyhow, e.g added shifts
             if not any(recur_event_unboxed.recur_id == recur_event.id and recur_event_unboxed.init_start == start_date
@@ -96,22 +96,23 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
             .filter(Event.start >= start).all()
         for event in related_events:
             print("event.init_start ", event.init_start)
-            print("event.init_start.replace(tzinfo=UTC) ", event.init_start.replace(tzinfo=UTC))
+            print("event.init_start.replace(tzinfo=UTC) ", event.init_start.replace(tzinfo=pytz.UTC))
             print("event.init_start.replace(tzinfo=UTC).astimezone(timezone) ",
-                  event.init_start.replace(tzinfo=UTC).astimezone(timezone))
+                  event.init_start.replace(tzinfo=pytz.UTC).astimezone(timezone))
 
             print("start ", start)
-            print("start.replace(tzinfo=UTC) ", start.replace(tzinfo=UTC))
+            print("start.replace(tzinfo=UTC) ", start.replace(tzinfo=pytz.UTC))
             print("start.replace(tzinfo=UTC).astimezone(timezone).time() ",
-                  start.replace(tzinfo=UTC).astimezone(timezone).time())
+                  start.replace(tzinfo=pytz.UTC).astimezone(timezone).time())
 
-            print("datetime.combine", datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
-                                                       start.replace(tzinfo=UTC).astimezone(timezone).time()))
+            print("datetime.combine", datetime.combine(event.init_start.replace(tzinfo=pytz.UTC).astimezone(timezone),
+                                                       start.replace(tzinfo=pytz.UTC).astimezone(timezone).time()))
             print("datetime.combine.astimezone(UTC)",
-                  datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
-                                   start.replace(tzinfo=UTC).astimezone(timezone).time()).astimezone(UTC))
-            event.init_start = datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
-                                                start.replace(tzinfo=UTC).astimezone(timezone).time()).astimezone(UTC)
+                  datetime.combine(event.init_start.replace(tzinfo=pytz.UTC).astimezone(timezone),
+                                   start.replace(tzinfo=pytz.UTC).astimezone(timezone).time()).astimezone(pytz.UTC))
+            event.init_start = datetime.combine(event.init_start.replace(tzinfo=pytz.UTC).astimezone(timezone),
+                                                start.replace(tzinfo=pytz.UTC).astimezone(timezone).time()).astimezone(
+                pytz.UTC)
             print("post event.init_start ", event.init_start)
             event.recur_event = recur_event
             db.session.merge(event)
