@@ -1,4 +1,4 @@
 SECRET_KEY = 'change-me'
-SQLALCHEMY_DATABASE_URI = 'postgres://nbquytksexkebs:62d9e2eb16f98e53604825272fbf124ce1b40897450cf8b847248fc5af1062d4@ec2-54-247-125-38.eu-west-1.compute.amazonaws.com:5432/dfso4psaummig6'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///resources/database.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 WTF_CSRF_TIME_LIMIT = 14400
