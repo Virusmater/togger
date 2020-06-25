@@ -13,25 +13,27 @@
     {% endif %}
     {% endwith %}
     <form id="modalForm" onsubmit="return false">
-          <div class="form-group">
-        <label for="shareUrl">Share URL</label>
-        <div class="input-group">
-            <input class="form-control" id="shareUrl" name="url" type="text" placeholder="Select the permission first >" readonly>
-              <div class="input-group-append" id="shareGroupRight">
-                  <select autofocus onchange="newShare(modalForm, modal, '/api/v1/calendars/share')"
-                          class="custom-select" name="roleName" id="roleName"
-                          aria-label="Example select with button addon">
-                      <option value="" selected>...</option>
-                      <option value="10">View</option>
-                      <option value="50">Edit</option>
-                  </select>
-                  <button class="btn btn-success" data-content="Copied!" data-placement="top" data-toggle="popover"
-                          id="buttonCopyShare" onclick="copyText(shareUrl)" style="display: none;" type="button">Copy
-                      link
-                  </button>
-              </div>
-        </div>
-        <small id="shareHelp" class="form-text text-muted">The link will be active next 7 days.</small>  </div>
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            <label for="shareUrl">Share URL</label>
+            <div class="input-group">
+                <input class="form-control" id="shareUrl" name="url" placeholder="Select the permission first >"
+                       readonly type="text">
+                <div class="input-group-append" id="shareGroupRight">
+                    <select aria-label="Example select with button addon" autofocus
+                            class="custom-select" id="roleName" name="roleName"
+                            onchange="newShare(modalForm, modal, '/api/v1/calendars/share')">
+                        <option selected value="">...</option>
+                        <option value="10">View</option>
+                        <option value="50">Edit</option>
+                    </select>
+                    <button class="btn btn-success" data-content="Copied!" data-placement="top" data-toggle="popover"
+                            id="buttonCopyShare" onclick="copyText(shareUrl)" style="display: none;" type="button">Copy
+                        link
+                    </button>
+                </div>
+            </div>
+            <small class="form-text text-muted" id="shareHelp">The link will be active next 7 days.</small></div>
     </form>
 </div>
 <div class="modal-footer">

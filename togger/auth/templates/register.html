@@ -4,21 +4,17 @@
 <form action='register?{{ query_string }}' class="form-signin" method='POST'>
     {{ super() }}
     <h1 class="h3 mb-3 font-weight-normal">Please register</h1>
-    <input autofocus class="form-control" id="inputFirstName" name="firstName" placeholder="First name" required
-           type="text" maxlength="80">
-    <input class="form-control" id="inputLastName" name="lastName" placeholder="Last name" required
-           type="text" maxlength="80">
-
-    <input class="form-control" id="inputEmail" name="email" placeholder="Email address" required
-           type="email" maxlength="80">
-    <input type="hidden"/>
+    {{ form.firstName(size=80, class_="form-control", placeholder="First name") }}
+    {{ form.lastName(size=80, class_="form-control", placeholder="Last name") }}
+    {{ form.email(size=80, class_="form-control", placeholder="Email address") }}
+    {{ form.hidden_tag() }}
     <div class="input-group show-password" id="show_hide_password">
-        <input class="form-control" id="inputPassword" name="password" placeholder="Password" required type="password">
+        {{ form.password(size=80, class_="form-control", placeholder="Password") }}
         <div class="input-group-append">
             <span class="input-group-text"><a class="text-dark" href=""><i class="fa fa-eye"></i></a></span>
         </div>
     </div>
-    <button class="btn btn-lg btn-primary btn-block my-2" type="submit">Sign up</button>
+    {{ form.submit(class_="btn btn-lg btn-primary btn-block my-2") }}
     <a class="text-decoration-none" href="login?{{ query_string }}">or sign in</a> /
     <a class="text-decoration-none" href="forgot">forgot password</a>
 </form>

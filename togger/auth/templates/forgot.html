@@ -4,9 +4,9 @@
 <form action='forgot' class="form-signin" method='POST'>
     {{ super() }}
     <h1 class="h3 mb-3 font-weight-normal">Reset password</h1>
-    <input autofocus class="form-control mt-1" id="inputEmail" maxlength="80" name="email" placeholder="Email address"
-           required type="email">
-    <button class="btn btn-lg btn-primary btn-block my-2" type="submit">Email me</button>
+    {{ form.email(size=80, class_="form-control", placeholder="Email address") }}
+    {{ form.hidden_tag() }}
+    {{ form.submit(class_="btn btn-lg btn-primary btn-block my-2") }}
     <a class="text-decoration-none" href="login?{{ query_string }}">or sign in</a> /
     <a class="text-decoration-none" href="register?{{ query_string }}">or sign up</a>
 </form>

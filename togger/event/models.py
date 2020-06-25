@@ -23,14 +23,14 @@ class EventBase(db.Model):
 
 class Event(EventBase):
     id = db.Column(GUID(), primary_key=True, default=uuid.uuid4)
-    group_id = db.Column(GUID(), db.ForeignKey('recur_event.id'))
+    recur_id = db.Column(GUID(), db.ForeignKey('recur_event.id'))
     recur_event = db.relationship('RecurEvent')
     shifts = db.relationship('Shift', backref='Event', cascade="all,delete", lazy=True)
     init_start = db.Column(db.DateTime, default=same_as('start'))
 
     @property
     def serialized(self):
-        dict = {
+        output = {
             'title': self.title,
             'description': self.description,
             'start': self.start.isoformat() + 'Z',
@@ -39,10 +39,10 @@ class Event(EventBase):
             'allDay': self.all_day
         }
         if self.id:
-            dict['id'] = self.id
-        if self.group_id:
-            dict['groupId'] = self.group_id
-        return dict
+            output['id'] = self.id
+        if self.recur_id:
+            output['recurId'] = self.recur_id
+        return output
 
     def get_color(self):
         if len(self.shifts) > 1:
@@ -58,6 +58,8 @@ class RecurEvent(EventBase):
     start_recur = db.Column(db.DateTime, nullable=False)
     end_recur = db.Column(db.DateTime)
     rrule = db.Column(db.String(256), nullable=False)
+    recurrent_type = db.Column(db.String(256), nullable=False, default='')
+    recurrent_interval = db.Column(db.Integer, nullable=False, default=1)
 
 
 class Shift(db.Model):

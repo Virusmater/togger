@@ -3,6 +3,7 @@ from flask import Blueprint, request, redirect, url_for, render_template, flash
 from flask_login import LoginManager, login_required, logout_user
 
 from . import auth_dao
+from .auth_forms import LoginForm, RegisterForm, ForgotForm, RestoreForm, ProfileForm, VerifyForm, PasswordForm
 
 bp = Blueprint("auth", __name__, url_prefix="/auth", template_folder="templates")
 login_manager = LoginManager()
@@ -14,7 +15,12 @@ def login():
         if flask_login.current_user.is_authenticated:
             return redirect(url_for('main', **request.args))
         else:
-            return render_template('login.html', query_string=request.query_string)
+            share = request.args.get('share')
+            if share:
+                query_string = 'share={share}'.format(share=share)
+            else:
+                query_string = ''
+            return render_template('login.html', query_string=query_string, form=LoginForm())
     email = request.form['email']
     user = auth_dao.get_user(email)
     if user and user.check_password(request.form['password']):
@@ -30,7 +36,12 @@ def register():
         if flask_login.current_user.is_authenticated:
             return redirect(url_for('main', **request.args))
         else:
-            return render_template('register.html', query_string=request.query_string)
+            share = request.args.get('share')
+            if share:
+                query_string = 'share={share}'.format(share=share)
+            else:
+                query_string = ''
+            return render_template('register.html', query_string=query_string, form=RegisterForm())
     email = request.form['email']
     if auth_dao.get_user(email) is None:
         first_name = request.form['firstName']
@@ -45,7 +56,9 @@ def register():
 
 @bp.route('/forgot', methods=['GET'])
 def render_forgot():
-    return render_template('forgot.html')
+    if flask_login.current_user.is_authenticated:
+        return redirect(url_for('main', **request.args))
+    return render_template('forgot.html', form=ForgotForm())
 
 
 @bp.route('/forgot', methods=['POST'])
@@ -53,12 +66,12 @@ def post_forgot():
     email = request.form['email']
     auth_dao.password_email(email)
     flash('The email with the restoration link has been sent. Check your inbox.', 'success')
-    return render_template('login.html')
+    return redirect(url_for('auth.login', **request.args))
 
 
 @bp.route('/restore/<token>', methods=['GET'])
 def render_restore(token):
-    return render_template('restore.html', token=token)
+    return render_template('restore.html', token=token, form=RestoreForm())
 
 
 @bp.route('/restore/<token>', methods=['POST'])
@@ -86,13 +99,19 @@ def logout():
 @bp.route("/profile")
 @login_required
 def render_profile():
-    return render_template('profile.html')
+    return render_template('profile.html', form=ProfileForm())
 
 
 @bp.route("/render_verify", methods=['GET'])
 @login_required
 def verify_reminder():
-    return render_template('verify_modal.html')
+    return render_template('verify_modal.html', form=VerifyForm())
+
+
+@bp.route('/render_password', methods=['GET'])
+@flask_login.login_required
+def render_password():
+    return render_template('password_modal.html', form=PasswordForm())
 
 
 @login_manager.user_loader

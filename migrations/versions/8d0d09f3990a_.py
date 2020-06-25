@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 8d60167e40cf
+Revision ID: 8d0d09f3990a
 Revises: 
-Create Date: 2020-06-22 01:06:20.984145
+Create Date: 2020-06-25 22:22:13.900545
 
 """
 import sqlalchemy as sa
@@ -11,7 +11,7 @@ from alembic import op
 # revision identifiers, used by Alembic.
 import togger
 
-revision = '8d60167e40cf'
+revision = '8d0d09f3990a'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -47,6 +47,8 @@ def upgrade():
                     sa.Column('start_recur', sa.DateTime(), nullable=False),
                     sa.Column('end_recur', sa.DateTime(), nullable=True),
                     sa.Column('rrule', sa.String(length=256), nullable=False),
+                    sa.Column('recurrent_type', sa.String(length=256), nullable=False),
+                    sa.Column('recurrent_interval', sa.Integer(), nullable=False),
                     sa.Column('calendar_id', togger.database.GUID(), nullable=False),
                     sa.ForeignKeyConstraint(['calendar_id'], ['calendar.id'], ),
                     sa.PrimaryKeyConstraint('id')
@@ -69,11 +71,11 @@ def upgrade():
                     sa.Column('end', sa.DateTime(), nullable=False),
                     sa.Column('all_day', sa.Boolean(), nullable=False),
                     sa.Column('id', togger.database.GUID(), nullable=False),
-                    sa.Column('group_id', togger.database.GUID(), nullable=True),
+                    sa.Column('recur_id', togger.database.GUID(), nullable=True),
                     sa.Column('init_start', sa.DateTime(), nullable=True),
                     sa.Column('calendar_id', togger.database.GUID(), nullable=False),
                     sa.ForeignKeyConstraint(['calendar_id'], ['calendar.id'], ),
-                    sa.ForeignKeyConstraint(['group_id'], ['recur_event.id'], ),
+                    sa.ForeignKeyConstraint(['recur_id'], ['recur_event.id'], ),
                     sa.PrimaryKeyConstraint('id')
                     )
     op.create_table('shift',

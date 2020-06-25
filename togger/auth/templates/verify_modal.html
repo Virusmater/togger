@@ -14,11 +14,11 @@
     {% endwith %}
     <form id="modalForm" onsubmit="return false">
         Please verify your email
+        {{ form.hidden_tag() }}
     </form>
 </div>
 <div class="modal-footer">
     <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-    <button class="btn btn-primary" onclick="submit_modal(modalForm, modal, '{{ url_for('auth_api.resend_email') }}')"
-            type="submit">Resend
-    </button>
+    {{ form.submit(class_="btn btn-primary",
+    onclick="submit_modal(modalForm, modal, '" + url_for('auth_api.resend_email') + "')") }}
 </div>

@@ -12,14 +12,14 @@
     {% endfor %}
     {% endif %}
     {% endwith %}
-    <form id="modalForm" action="/api/v1/calendars/" method="post">
+    <form action="/api/v1/calendars/" class="mt-2" id="modalForm" method="post">
+        {{ form.hidden_tag() }}
         <div class="form-group">
-            <input class="form-control mt-2" id="calendarName" maxlength="80" name="calendarName"
-                   placeholder="calendar name" type="text" required autofocus>
+            {{ form.calendarName(size=80, class_="form-control", placeholder="calendar name") }}
         </div>
     </form>
 </div>
 <div class="modal-footer">
     <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-    <button class="btn btn-primary" form="modalForm" type="submit">Create</button>
+    {{ form.submit(class_="btn btn-primary", form='modalForm') }}
 </div>

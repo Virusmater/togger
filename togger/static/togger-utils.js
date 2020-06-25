@@ -9,7 +9,7 @@ function submit_modal(form, modal, url, method) {
     request.onload = function() {
         if (this.status >= 200 && this.status < 400) {
             $(modal).modal('hide')
-            if (this.responseURL.includes('change_password')){
+            if (this.responseURL.includes('/users/password')){
                 window.location.replace("/")
             } else {
                 calendar.refetchEvents()

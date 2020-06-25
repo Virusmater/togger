@@ -13,14 +13,12 @@
     {% endif %}
     {% endwith %}
     <form id="modalForm" action="/api/v1/calendars/" method="post">
-         <input type="hidden" name="_method"  value="DELETE">
-        Are you sure want to delete {{ current_role().calendar.name }} caledar?
+        {{ form.hidden_tag() }}
+        <input name="_method" type="hidden" value="DELETE">
+        Are you sure want to delete {{ current_role().calendar.name }} calendar?
     </form>
 </div>
 <div class="modal-footer">
-    _method
     <button class="btn btn-secondary" data-dismiss="modal" type="button">No</button>
-    <button class="btn btn-danger btn-primary" form="modalForm" onclick="submit_modal(modalForm, modal, '/calendars')"
-            type="submit">Delete calendar
-    </button>
+    {{ form.submit(class_="btn btn-primary", form='modalForm') }}
 </div>

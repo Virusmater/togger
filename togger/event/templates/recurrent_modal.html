@@ -1,0 +1,45 @@
+<div class="modal-header">
+    <h5 class="modal-title">Edit recurrent event</h5>
+    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body" id="modal-body">
+    <form id="modalForm" onsubmit="return false">
+        {{ form.hidden_tag() }}
+        <input id="allDay" name="allDay" type="hidden" value="{{ event.all_day }}">
+        <input id="start" name="start" type="hidden"
+               value="{{ event.start }}">
+        <input id="end" name="end" type="hidden" value="{{ event.end }}">
+        <input id="initStart" name="initStart" type="hidden" value="{{ event.init_start }}">
+        <input id="recurId" name="recurId" type="hidden"
+               value="{{ event.recur_id }}">
+        <input id="eventId" name="eventId" type="hidden"
+               value="{{ event.id }}">
+        <input id="timeZone" name="timeZone" type="hidden" value="{{ timezone.zone }}">
+        <input id="eventTitle" name="eventTitle" type="hidden" value="{{ event.title }}">
+        <input id="description" name="description" type="hidden" value="{{ event.description if event.description }}">
+        <div class="form-check">
+            <input checked class="form-check-input" id="recurrentChange1" name="recurrentChange" type="radio"
+                   value="this">
+            <label class="form-check-label" for="recurrentChange1">
+                This event
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" id="recurrentChange2" name="recurrentChange" type="radio" value="following">
+            <label class="form-check-label" for="recurrentChange2">
+                This and following events
+            </label>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary order-3" form="modalForm"
+            onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_recurrent') }}')"
+            type="submit">Save changes
+    </button>
+    <button class="btn btn-secondary order-2" data-dismiss="modal" onclick="calendar.refetchEvents()" type="button">
+        Close
+    </button>
+</div>
