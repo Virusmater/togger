@@ -95,8 +95,9 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
             .filter(Event.calendar_id == recur_event.calendar_id) \
             .filter(Event.start >= start).all()
         for event in related_events:
-            event.init_start = datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
-                                                start.replace(tzinfo=UTC).astimezone(timezone).time()) \
+            print("date=", event.init_start.replace(tzinfo=UTC).astimezone(timezone).date())
+            event.init_start = datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone).date(),
+                                                start.replace(tzinfo=UTC).astimezone(timezone).timetz()) \
                 .astimezone(UTC).replace(tzinfo=None)
             print(event.init_start)
             event.recur_event = recur_event
