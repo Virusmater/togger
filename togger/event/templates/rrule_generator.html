@@ -1,3 +1,4 @@
+{% if not event.recur_id and not event.id %}
 <div class="input-group">
     <select class="custom-select" id="rruleGenerator" name="recurrent">
         <option selected value="">Doesn't repeat</option>
@@ -18,3 +19,34 @@
         </select>
     </div>
 </div>
+{% elif event.recur_id %}
+{% if recur_event %}
+{% if recur_event.recurrent_type == "daily" %}
+Daily.
+{% elif recur_event.recurrent_type == "weekly" %}
+Weekly on {{ weekday[1] }}.
+{% elif recur_event.recurrent_type == "monthly" %}
+Monthly on {{ get_weekday_occurrence(event.start, timezone)[1] }} {{ weekday[1] }}.
+{% elif recur_event.recurrent_type == "yearly" %}
+Annually on {{ get_date(event.start, timezone) }}.
+{% elif recur_event.recurrent_type == "weekday" %}
+Every weekday (Monday to Friday).
+{% endif %}
+
+{% if recur_event.recurrent_interval == 1 %}
+Every time.
+{% elif recur_event.recurrent_interval == 2 %}
+Every 2nd time.
+{% elif recur_event.recurrent_interval == 3 %}
+Every 3rd time.
+{% elif recur_event.recurrent_interval == 4 %}
+Every 4th time.
+{% elif recur_event.recurrent_interval == 5 %}
+Every 5th time.
+{% endif %}
+
+{% if recur_event.end_recur %}
+Until {{ get_date(recur_event.end_recur, timezone) }}
+{% endif %}
+{% endif %}
+{% endif %}

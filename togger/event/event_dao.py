@@ -1,10 +1,13 @@
 import calendar
 import math
+import uuid
+from datetime import datetime, timedelta
 
 from dateutil.rrule import rrulestr
 from dateutil.tz import UTC
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import make_transient
 
 from togger import db
 from togger.calendar import calendar_dao
@@ -30,11 +33,13 @@ def get_recur_events(start, end, recur_events_unboxed):
         .filter((RecurEvent.end_recur >= start) | (RecurEvent.end_recur.is_(None))).all()
     for recur_event in recur_events:
         rrule = rrulestr(recur_event.rrule)
+        if recur_event.end_recur:
+            rrule = rrule.replace(until=recur_event.end_recur.replace(tzinfo=UTC))
         for start_date in list(rrule.between(after=start, before=end, inc=True)):
             start_date = start_date.astimezone(UTC).replace(tzinfo=None)
             # nasty part, do not add recurrent event if unboxed version already there
             # check if user moved the original event or changed it anyhow, e.g added shifts
-            if not any(recur_event_unboxed.group_id == recur_event.id and recur_event_unboxed.init_start == start_date
+            if not any(recur_event_unboxed.recur_id == recur_event.id and recur_event_unboxed.init_start == start_date
                        for recur_event_unboxed in recur_events_unboxed):
                 duration = recur_event.end - recur_event.start
                 event = generate_event(recur_event.id, start=start_date, end=start_date + duration)
@@ -44,17 +49,17 @@ def get_recur_events(start, end, recur_events_unboxed):
 
 @auth_dao.has_role(Role.MANAGER)
 def save_event(title, description, start, end, all_day=False, event_id=None, recurrent=False, recurrent_interval=None,
-               group_id=None,
+               recur_id=None,
                init_start=None, timezone=None):
     calendar_id = calendar_dao.get_current_calendar().id
     if recurrent:
         save_group_event(title=title.strip(), description=description, start=start, end=end, all_day=all_day,
                          timezone=timezone, recurrent=recurrent, recurrent_interval=recurrent_interval)
     else:
-        if not group_id:
-            group_id = None
+        if not recur_id:
+            recur_id = None
         event = Event(title=title.strip(), description=description,
-                      start=start, end=end, all_day=all_day, id=event_id, calendar_id=calendar_id, group_id=group_id)
+                      start=start, end=end, all_day=all_day, id=event_id, calendar_id=calendar_id, recur_id=recur_id)
         if init_start:
             event.init_start = init_start
         db.session.merge(event)
@@ -62,12 +67,48 @@ def save_event(title, description, start, end, all_day=False, event_id=None, rec
 
 
 @auth_dao.has_role(Role.MANAGER)
-def save_group_event(title, description, start, end, timezone, recurrent, recurrent_interval=None, all_day=False):
-    calendar_id = calendar_dao.get_current_calendar().id
-    rrule_str = get_common_rrule(start, timezone, recurrent, recurrent_interval)
-    recur_event = RecurEvent(title=title.strip(), description=description,
-                             start=start, end=end, start_recur=start, all_day=all_day,
-                             calendar_id=calendar_id, rrule=rrule_str)
+def save_group_event(title=None, description=None, start=None, end=None, timezone=None, recurrent=None,
+                     recurrent_interval=None, all_day=False, id=None, init_start=None):
+    if id:
+        # set end_recur for previous events
+        recur_event = get_group_event(id)
+        original_end_recur = None
+        if recur_event.end_recur:
+            original_end_recur = recur_event.end_recur
+        recur_event.end_recur = init_start - timedelta(seconds=1)
+        db.session.merge(recur_event)
+
+        # update init_date for all related events
+        related_events = Event.query.filter(Event.recur_id == id) \
+            .filter(Event.calendar_id == recur_event.calendar_id) \
+            .filter(Event.start >= start).all()
+        recur_event_id = uuid.uuid4()
+        for event in related_events:
+            event.init_start = datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
+                                                start.replace(tzinfo=UTC).astimezone(timezone).time()) \
+                .astimezone(UTC)
+            event.recur_id = recur_event_id
+            db.session.merge(event)
+
+        # generate new id and update rrule for new recurrent event
+        db.session.expunge(recur_event)
+        make_transient(recur_event)
+        rrule_str = get_common_rrule(start, timezone, recur_event.recurrent_type, recur_event.recurrent_interval)
+        recur_event.start = start
+        recur_event.end = end
+        recur_event.rrule = rrule_str
+        recur_event.end_recur = original_end_recur
+        recur_event.id = recur_event_id
+        recur_event.all_day = all_day
+        recur_event.description = description
+        recur_event.title = title
+    else:
+        calendar_id = calendar_dao.get_current_calendar().id
+        rrule_str = get_common_rrule(start, timezone, recurrent, recurrent_interval)
+        recur_event = RecurEvent(title=title.strip(), description=description,
+                                 start=start, end=end, start_recur=start, all_day=all_day,
+                                 calendar_id=calendar_id, rrule=rrule_str, recurrent_type=recurrent,
+                                 recurrent_interval=recurrent_interval)
     db.session.merge(recur_event)
     db.session.commit()
 
@@ -81,11 +122,10 @@ def remove_event(event_id):
 
 
 @auth_dao.has_role(Role.MANAGER)
-def remove_group_event(group_id):
-    calendar_id = calendar_dao.get_current_calendar().id
-    group_event = RecurEvent.query.filter(RecurEvent.id == group_id).filter(RecurEvent.calendar_id == calendar_id) \
-        .first()
-    db.session.delete(group_event)
+def remove_group_event(recur_id, start):
+    recur_event = get_group_event(recur_id)
+    recur_event.end_recur = start - timedelta(seconds=1)
+    db.session.merge(recur_event)
     db.session.commit()
 
 
@@ -94,24 +134,24 @@ def get_event(event_id):
     return Event.query.filter(Event.id == event_id).filter(Event.calendar_id == calendar_id).first()
 
 
-def get_group_event(group_id):
+def get_group_event(recur_id):
     calendar_id = calendar_dao.get_current_calendar().id
-    return RecurEvent.query.filter(RecurEvent.id == group_id).filter(RecurEvent.calendar_id == calendar_id).first()
+    return RecurEvent.query.filter(RecurEvent.id == recur_id).filter(RecurEvent.calendar_id == calendar_id).first()
 
 
-def generate_event(group_id, start, end):
-    recur_event = get_group_event(group_id)
+def generate_event(recur_id, start, end):
+    recur_event = get_group_event(recur_id)
     event = Event(title=recur_event.title, description=recur_event.description,
                   start=start, end=end, all_day=recur_event.all_day, calendar_id=recur_event.calendar_id,
-                  group_id=recur_event.id)
+                  recur_id=recur_event.id)
     return event
 
 
-def save_shift(event_id=None, new_person_name=None, shift_ids_to_remove=[], group_id=None, start=None, end=None):
+def save_shift(event_id=None, new_person_name=None, shift_ids_to_remove=[], recur_id=None, start=None, end=None):
     if event_id:
         event = get_event(event_id)
     else:
-        event = generate_event(group_id=group_id, start=start, end=end)
+        event = generate_event(recur_id=recur_id, start=start, end=end)
     for shift_id in shift_ids_to_remove:
         for shift in event.shifts:
             if str(shift.id) == shift_id:

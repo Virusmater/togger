@@ -1,43 +1,84 @@
-            <div class="modal-header">
-                <h5 class="modal-title">Edit or create event</h5>
-                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                    <span aria-hidden="true">&times;</span>
+<div class="modal-header">
+    <h5 class="modal-title">Edit or create event</h5>
+    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body" id="modal-body">
+    <form id="modalForm" onsubmit="return false">
+        {{ form.hidden_tag() }}
+        <input id="allDay" name="allDay" type="hidden" value="{{ event.all_day }}">
+        <input id="start" name="start" type="hidden"
+               value="{{ event.start }}">
+        <input id="initStart" name="initStart" type="hidden"
+               value="{{ event.start }}">
+        <input id="end" name="end" type="hidden" value="{{ event.end }}">
+        <input id="timeZone" name="timeZone" type="hidden" value="{{ timezone.zone }}">
+        <input id="eventId" name="eventId" type="hidden" value="{{ event.id if event.id else '' }}">
+        <input id="recurId" name="recurId" type="hidden"
+               value="{{ event.recur_id if event.recur_id else '' }}">
+        <div class="form-group">
+            <input autofocus class="form-control" id="eventTitle" maxlength="80"
+                   name="eventTitle" placeholder="event name" required type="text" value="{{ event.title }}">
+        </div>
+        <div class="form-group">
+                        <textarea class="form-control" id="description" name="description"
+                                  placeholder="event description"
+                                  rows="3">{{ event.description if event.description }}</textarea>
+        </div>
+        {% with weekday=get_weekday(event.start, timezone) %}
+        {% include 'rrule_generator.html' %}
+        {% endwith %}
+    </form>
+</div>
+<div class="modal-footer">
+    {% if event.recur_id and not event.id %}
+    <div class="input-group segmented order-3">
+        <div class="input-group-prepend">
+            <button class="btn btn-primary"
+                    onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_event') }}')"
+                    type="button">Save changes
+            </button>
+            <button aria-expanded="false" aria-haspopup="true"
+                    class="btn btn-primary dropdown-toggle dropdown-toggle-split segmented" data-toggle="dropdown"
+                    type="button">
+                <span class="sr-only">Toggle Options</span>
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item"
+                        onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_recurrent') }}')">
+                    This and following events
                 </button>
             </div>
-            <div class="modal-body" id="modal-body">
-                <form id="modalForm" onsubmit="return false">
-                    {{ form.hidden_tag() }}
-                    <input id="allDay" name="allDay" type="hidden" value="{{ event.all_day }}">
-                    <input id="startDateTime" name="startDateTime" type="hidden"
-                           value="{{ event.start }}">
-                    <input id="endDateTime" name="endDateTime" type="hidden" value="{{ event.end }}">
-                    <input id="timeZone" name="timeZone" type="hidden" value="{{ timezone.zone }}">
-                    <input id="eventId" name="eventId" type="hidden" value="{{ event.id if event.id else '' }}">
-                    <input id="groupId" name="groupId" type="hidden"
-                           value="{{ event.group_id if event.group_id else '' }}">
-                    <div class="form-group">
-                        <input class="form-control" id="eventTitle" maxlength="80" name="eventTitle"
-                               placeholder="event name" type="text" value="{{ event.title }}" required autofocus>
-                    </div>
-                    <div class="form-group">
-                        <textarea class="form-control" placeholder="event description" name="eventDescription"
-                                  id="eventDescription" rows="3">{{ event.description if event.description }}</textarea>
-                    </div>
-                    {% if not event.group_id and not event.id %}
-                    {% with weekday=get_weekday(event.start, timezone) %}
-                    {% include 'rrule_generator.html' %}
-                    {% endwith %}
-                    {% endif %}
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary order-3" form="modalForm" type="submit"
-                        onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_event') }}')">Save changes</button>
-                {% if event.group_id or event.id %}
-                <button class="btn btn-danger mr-auto order-1" form="modalForm"
-                        onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.delete_event') }}', 'DELETE')" type="submit">
-                Delete
+        </div>
+    </div>
+    <div class="input-group mr-auto segmented order-1">
+        <div class="input-group-prepend">
+            <button class="btn btn-danger" type="button">Delete</button>
+            <button aria-expanded="false" aria-haspopup="true"
+                    class="btn btn-danger dropdown-toggle dropdown-toggle-split segmented" data-toggle="dropdown"
+                    type="button">
+                <span class="sr-only">Toggle Options</span>
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item"
+                        onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.delete_event') }}',
+                              'DELETE')">This and following events
                 </button>
-                {% endif %}
-                <button class="btn btn-secondary order-2" data-dismiss="modal" type="button">Close</button>
             </div>
+        </div>
+    </div>
+    {% else %}
+    <button class="btn btn-primary order-3" form="modalForm"
+            onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.post_event') }}')"
+            type="submit">Save changes
+    </button>
+    {% if event.id %}
+    <button class="btn btn-danger mr-auto order-1" form="modalForm"
+            onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.delete_event') }}', 'DELETE')" type="submit">
+        Delete
+    </button>
+    {% endif %}
+    {% endif %}
+    <button class="btn btn-secondary order-2" data-dismiss="modal" type="button">Close</button>
+</div>

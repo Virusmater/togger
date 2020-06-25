@@ -38,3 +38,13 @@
     border-top-left-radius: 0.25rem;
     border-bottom-left-radius: 0.25rem;
     }
+
+    div.segmented {
+        width: auto;
+        border-radius: 0.25rem;
+    }
+
+    .input-group > .input-group-prepend:first-child > .btn.segmented {
+        border-top-right-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+    }

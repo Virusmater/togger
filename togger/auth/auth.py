@@ -56,6 +56,8 @@ def register():
 
 @bp.route('/forgot', methods=['GET'])
 def render_forgot():
+    if flask_login.current_user.is_authenticated:
+        return redirect(url_for('main', **request.args))
     return render_template('forgot.html', form=ForgotForm())
 
 

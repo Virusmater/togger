@@ -8,10 +8,10 @@
     <form id="modalForm" onsubmit="return false">
         {{ form.hidden_tag() }}
         <input id="eventId" name="eventId" type="hidden" value="{{ event.id if event.id else '' }}">
-        <input id="groupId" name="groupId" type="hidden" value="{{ event.group_id if event.group_id else '' }}">
+        <input id="recurId" name="recurId" type="hidden" value="{{ event.recur_id if event.recur_id else '' }}">
         <input id="allDay" name="allDay" readonly type="hidden" value="{{ event.all_day }}">
-        <input id="startDateTime" name="startDateTime" readonly type="hidden" value="{{ event.start }}">
-        <input id="endDateTime" name="endDateTime" readonly type="hidden" value="{{ event.end }}">
+        <input id="start" name="start" readonly type="hidden" value="{{ event.start }}">
+        <input id="end" name="end" readonly type="hidden" value="{{ event.end }}">
         <textarea class="form-control" readonly rows="3">{{ event.description }}</textarea>
         <ul class="list-group mt-1">
             {% for shift in event.shifts %}
