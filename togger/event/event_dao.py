@@ -95,8 +95,24 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
             .filter(Event.calendar_id == recur_event.calendar_id) \
             .filter(Event.start >= start).all()
         for event in related_events:
+            print("event.init_start ", event.init_start)
+            print("event.init_start.replace(tzinfo=UTC) ", event.init_start.replace(tzinfo=UTC))
+            print("event.init_start.replace(tzinfo=UTC).astimezone(timezone) ",
+                  event.init_start.replace(tzinfo=UTC).astimezone(timezone))
+
+            print("start ", start)
+            print("start.replace(tzinfo=UTC) ", start.replace(tzinfo=UTC))
+            print("start.replace(tzinfo=UTC).astimezone(timezone).time() ",
+                  start.replace(tzinfo=UTC).astimezone(timezone).time())
+
+            print("datetime.combine".datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
+                                                      start.replace(tzinfo=UTC).astimezone(timezone).time()))
+            print("datetime.combine.astimezone(UTC)",
+                  datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
+                                   start.replace(tzinfo=UTC).astimezone(timezone).time()).astimezone(UTC))
             event.init_start = datetime.combine(event.init_start.replace(tzinfo=UTC).astimezone(timezone),
                                                 start.replace(tzinfo=UTC).astimezone(timezone).time()).astimezone(UTC)
+            print("post event.init_start ", event.init_start)
             event.recur_event = recur_event
             db.session.merge(event)
     else:
