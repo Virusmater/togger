@@ -54,7 +54,10 @@
     </div>
     <div class="input-group mr-auto segmented order-1">
         <div class="input-group-prepend">
-            <button class="btn btn-danger" type="button">Delete</button>
+            <button class="btn btn-danger" onclick="submit_modal(modalForm, modal, '{{ url_for('event_api.delete_recurrent_event') }}',
+                              'DELETE')"
+                    type="button">Delete
+            </button>
             <button aria-expanded="false" aria-haspopup="true"
                     class="btn btn-danger dropdown-toggle dropdown-toggle-split segmented" data-toggle="dropdown"
                     type="button">

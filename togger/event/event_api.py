@@ -66,6 +66,18 @@ def delete_event():
     return '', 204
 
 
+@bp.route('/recurrent', methods=['DELETE'])
+@flask_login.login_required
+def delete_recurrent_event():
+    recur_id = request.form['recurId']
+    start = parser.parse(request.form['start'])
+    end = parser.parse(request.form['end'])
+    event = event_dao.generate_event(recur_id, start=start, end=end)
+    event.hide = True
+    event_dao.save_event(event=event)
+    return '', 204
+
+
 @bp.route('/shifts', methods=['POST'])
 @flask_login.login_required
 def post_shift(person_name=None, event_id=None):
@@ -112,6 +124,6 @@ def post_recurrent(recurrent_change='following'):
         db.session.merge(event)
         db.session.commit()
     elif recurrent_change == 'following':
-        event_dao.save_group_event(id=recur_id, start=start, end=end, timezone=timezone, init_start=init_start,
+        event_dao.save_group_event(recur_id=recur_id, start=start, end=end, timezone=timezone, init_start=init_start,
                                    all_day=all_day, title=title, description=description)
     return '', 204

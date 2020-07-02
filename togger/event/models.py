@@ -27,6 +27,9 @@ class Event(EventBase):
     recur_event = db.relationship('RecurEvent')
     shifts = db.relationship('Shift', backref='Event', cascade="all,delete", lazy=True)
     init_start = db.Column(db.DateTime, default=same_as('start'))
+    # sometimes will have to hide the event instead of true removal in order to remember what actually event was
+    # removed from the recurrent group
+    hide = db.Column(db.Boolean, default=False, nullable=False)
 
     @property
     def serialized(self):
