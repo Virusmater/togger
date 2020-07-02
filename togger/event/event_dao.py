@@ -6,7 +6,6 @@ from dateutil.rrule import rrulestr
 from dateutil.tz import UTC
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import make_transient
 
 from togger import db
 from togger.calendar import calendar_dao
@@ -19,8 +18,9 @@ def get_events(start, end):
     calendar_id = calendar_dao.get_current_calendar().id
     events = Event.query.filter(Event.calendar_id == calendar_id).filter(Event.start <= end).filter(
         Event.end >= start).all()
-    recur_events_unboxed = list(filter(lambda recur_event_id: recur_event_id is not None, events))
+    recur_events_unboxed = list(filter(lambda event: event.recur_id is not None, events))
     events.extend(get_recur_events(start, end, recur_events_unboxed))
+    events = list(filter(lambda event: event.hide is not True, events))
     return events
 
 
@@ -47,11 +47,15 @@ def get_recur_events(start, end, recur_events_unboxed):
 
 
 @auth_dao.has_role(Role.MANAGER)
-def save_event(title, description, start, end, all_day=False, event_id=None, recurrent=False, recurrent_interval=None,
+def save_event(title=None, description=None, start=None, end=None, all_day=False, event_id=None, recurrent=False,
+               recurrent_interval=None,
                recur_id=None,
-               init_start=None, timezone=None):
+               init_start=None, timezone=None, event=None):
     calendar_id = calendar_dao.get_current_calendar().id
-    if recurrent:
+    if event:
+        db.session.merge(event)
+        db.session.commit()
+    elif recurrent:
         save_group_event(title=title.strip(), description=description, start=start, end=end, all_day=all_day,
                          timezone=timezone, recurrent=recurrent, recurrent_interval=recurrent_interval)
     else:
@@ -67,10 +71,13 @@ def save_event(title, description, start, end, all_day=False, event_id=None, rec
 
 @auth_dao.has_role(Role.MANAGER)
 def save_group_event(title=None, description=None, start=None, end=None, timezone=None, recurrent=None,
-                     recurrent_interval=None, all_day=False, id=None, init_start=None):
-    if id:
+                     recurrent_interval=None, all_day=False, recur_id=None, init_start=None):
+    calendar_id = calendar_dao.get_current_calendar().id
+    if recur_id:
         # set end_recur for previous events
-        recur_event = get_group_event(id)
+        recur_event = get_group_event(recur_id)
+        if recur_event.calendar_id != calendar_id:
+            return
         original_end_recur = None
         if recur_event.end_recur:
             original_end_recur = recur_event.end_recur
@@ -78,20 +85,15 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
         db.session.merge(recur_event)
 
         # generate new id and update rrule for new recurrent event
-        db.session.expunge(recur_event)
-        make_transient(recur_event)
         rrule_str = get_common_rrule(start, timezone, recur_event.recurrent_type, recur_event.recurrent_interval)
-        recur_event.start = start
-        recur_event.end = end
-        recur_event.rrule = rrule_str
-        recur_event.end_recur = original_end_recur
-        recur_event.id = None
-        recur_event.all_day = all_day
-        recur_event.description = description
-        recur_event.title = title
+        recur_event = RecurEvent(title=title.strip(), description=description,
+                                 start=start, end=end, start_recur=start, end_recur=original_end_recur,
+                                 all_day=all_day,
+                                 calendar_id=calendar_id, rrule=rrule_str, recurrent_type=recur_event.recurrent_type,
+                                 recurrent_interval=recur_event.recurrent_interval)
 
         # update init_date for all related events
-        related_events = Event.query.filter(Event.recur_id == id) \
+        related_events = Event.query.filter(Event.recur_id == recur_id) \
             .filter(Event.calendar_id == recur_event.calendar_id) \
             .filter(Event.start >= start).all()
         for event in related_events:
@@ -101,7 +103,6 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
             event.recur_event = recur_event
             db.session.merge(event)
     else:
-        calendar_id = calendar_dao.get_current_calendar().id
         rrule_str = get_common_rrule(start, timezone, recurrent, recurrent_interval)
         recur_event = RecurEvent(title=title.strip(), description=description,
                                  start=start, end=end, start_recur=start, all_day=all_day,
@@ -115,7 +116,14 @@ def save_group_event(title=None, description=None, start=None, end=None, timezon
 def remove_event(event_id):
     calendar_id = calendar_dao.get_current_calendar().id
     event = Event.query.filter(Event.id == event_id).filter(Event.calendar_id == calendar_id).first()
-    db.session.delete(event)
+    if event.recur_id:
+        event.hide = True
+        event.title = None
+        event.description = None
+        event.shifts = []
+        db.session.merge(event)
+    else:
+        db.session.delete(event)
     db.session.commit()
 
 

@@ -59,7 +59,7 @@ def accept_share(share_token):
             if role.calendar_id == share.calendar_id:
                 if role.type < share.role_type:
                     db.session.delete(role)
-                    db.session.commit()
+                    db.session.flush()
                     break
                 else:
                     return
