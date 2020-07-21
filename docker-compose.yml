@@ -3,6 +3,7 @@ services:
   togger:
     restart: always
     environment:
+      - FLASK_ENV=development
       - SECRET_KEY=change-me
       - SQLALCHEMY_DATABASE_URI=sqlite:///resources/database.db
       - MODULE_NAME=togger.main
