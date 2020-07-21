@@ -44,6 +44,7 @@ services:
     restart: always
     environment:
       - SECRET_KEY=change-me
+      - FLASK_ENV=development
       - SQLALCHEMY_DATABASE_URI=sqlite:///resources/database.db
       - MODULE_NAME=togger.main
       - VARIABLE_NAME=application
@@ -61,6 +62,7 @@ services:
 * Put your database uri in SQLALCHEMY_DATABASE_URI or use sqlite by default (was tested with sqlite and postgresql only)
 * Change APP_URL to you real app url (used in emails)
 * Put SMTP parameters for an email validation and a password recovery
+* Change FLASK_ENV according to your environment
 
 run
 
