@@ -9,7 +9,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-import togger
+import togger.database
 
 revision = '8d0d09f3990a'
 down_revision = None
