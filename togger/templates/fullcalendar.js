@@ -156,7 +156,20 @@ document.addEventListener('DOMContentLoaded', function() {
         nowIndicator: true,
         dayMaxEvents: true, // allow "more" link when too many events
         events: "{{ url_for('event_api.get_events') }}",
-        eventColor: '#9F9C99'
+        eventColor: '#9F9C99',
+        eventDidMount: function(info) {
+          // Change color of dot marker
+          var dotEl = info.el.getElementsByClassName('fc-daygrid-event-dot')[0];
+          if (dotEl) {
+            dotEl.style.borderColor = info.event.backgroundColor
+          }
+
+          // Change color of dot marker
+          var dotEl2 = info.el.getElementsByClassName('fc-list-event-dot')[0];
+          if (dotEl2) {
+            dotEl2.style.borderColor = info.event.backgroundColor
+          }
+      }
     });
     calendar.render();
     // https://stackoverflow.com/questions/61987141/dyanmic-change-text-on-custombuttons
