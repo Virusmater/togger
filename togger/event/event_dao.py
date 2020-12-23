@@ -118,9 +118,8 @@ def remove_event(event_id):
     event = Event.query.filter(Event.id == event_id).filter(Event.calendar_id == calendar_id).first()
     if event.recur_id:
         event.hide = True
-        event.title = None
-        event.description = None
-        event.shifts = []
+        for shift in shifts:
+            db.session.delete(shift)
         db.session.merge(event)
     else:
         db.session.delete(event)
